@@ -15,7 +15,15 @@ return new class extends Migration
     {
         Schema::create('links', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->unsignedBigInteger('userId');
+            $table->string('originalUrl');
+            $table->string('shortCode');
+            $table->boolean('isPublic')->default(true);
+            $table->date('createdDate');
+            $table->foreign('userId')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
         });
     }
 

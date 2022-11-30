@@ -15,15 +15,20 @@ class Link extends Model implements LinkInterface
     private bool $isPublic;
     private string $createdDate;
 
-//    protected $fillable = [
-//        'userId',
-//        'originalUrl',
-//        'shortCode',
-//        'isPublic',
-//        'createdDate',
-//    ];
+    protected $fillable = [
+        'userId',
+        'originalUrl',
+        'shortCode',
+        'isPublic',
+        'createdDate',
+    ];
 
     public $timestamps = false;
+
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class);
+    }
 
     public function getUserId()
     {
