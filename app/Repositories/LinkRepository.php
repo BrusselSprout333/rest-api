@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Http\Controllers\UserController;
 use App\Http\Resources\LinksResource;
 use App\Models\Link;
 use Illuminate\Support\Collection;
@@ -9,53 +10,51 @@ use Illuminate\Support\Facades\Auth;
 
 class LinkRepository
 {
-    protected $link;
+    protected Link $link;
+    protected UserController $user;
 
-    public function __construct(Link $link)
+    public function __construct(Link $link, UserController $user)
     {
         $this->link = $link;
+        $this->user = $user;
     }
 
     public function create($data)//$userId, LinkDetails $linkDetails) : Link
     {
-        $link = Link::create([
-            'userId' => Auth::user()->id,
+        return Link::create([
+            'userId' => $this->user->getId(),
             'originalUrl' => $data['originalUrl'],
             'shortCode' => $this->createShortCode(),//->unique,
             'isPublic' => $data['isPublic'],
             'createdDate' => date("y-m-d")
         ]);
-        return new LinksResource($link);
     }
 
     public function update($data, $linkId)//$linkId, string $shortCode, LinkDetails $linkDetails) : Link
     {
-        $userId = $this->link->where('id', $linkId)->get('userId');
-
-        if(Auth::user()->id === $userId[0]['userId']) {
+        if($this->equalUserId($linkId)) {
             $link = $this->link->find($linkId);
             $link->update($data);
-            return new LinksResource($link);
+            return $link;
         }
         else throw new \Exception('you dont have access');
     }
 
     public function delete($linkId) : void
     {
-        $link = $this->link->find($linkId);
-        if(isset($link))
-            $link->delete();
-        else throw new \Exception('this link doesnt exist');
+        if($this->equalUserId($linkId)) {
+            $link = $this->link->find($linkId);
+            if(isset($link))
+                $link->delete();
+            else throw new \Exception('this link doesnt exist');
+        }
+        else throw new \Exception('you dont have access');
     }
 
-    public function getById($linkId)
+    public function getById($linkId) : Link
     {
-        $userId = $this->link->where('id', $linkId)->get('userId');
-
-        if(Auth::user()->id === $userId[0]['userId']) {
-            return $this->link
-                ->where('id', $linkId)
-                ->get();
+        if($this->equalUserId($linkId)) {
+            return $this->link->find($linkId);
         }
         else throw new \Exception('you dont have access');
     }
@@ -69,21 +68,26 @@ class LinkRepository
     public function getAll() : Collection
     {
         return $this->link->get();
-
-//        return LinksResource::collection(
-//            Link::where('userId', Auth::user()->id)->get()
-//        );
     }
 
 //    public function getAllByUser($userId) : Collection
 //    {
-//
+//          return LinksResource::collection(
+//            Link::where('userId', Auth::user()->id)->get()
+//        );
 //    }
 
     private function createShortCode()
     {
         $permitted_chars = '0123456789abcdefghijklmnopqrstuvwxyz';
         return substr(str_shuffle($permitted_chars), 0, 8);
+    }
+
+    private function equalUserId($linkId): bool
+    {
+        $userId = $this->link->where('id', $linkId)->get('userId');
+
+        return $this->user->getId() === $userId[0]['userId'];
     }
 }
 

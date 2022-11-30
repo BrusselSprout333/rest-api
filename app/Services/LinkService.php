@@ -2,10 +2,8 @@
 
 namespace App\Services;
 
-use App\Http\Resources\LinksResource;
 use App\Models\Link;
 use App\Repositories\LinkRepository;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 
@@ -27,6 +25,11 @@ class LinkService
         return $this->linkRepository->getAll();
     }
 
+    public function getById($id)
+    {
+        return $this->linkRepository->getById($id);
+    }
+
     public function create($data)
     {
         $validator = Validator::make($data, [
@@ -38,11 +41,6 @@ class LinkService
             throw new InvalidArgumentException($validator->errors()->first());
 
         return $this->linkRepository->create($data);
-    }
-
-    public function getById($id)
-    {
-        return $this->linkRepository->getById($id);
     }
 
     public function update($data, $linkId)
