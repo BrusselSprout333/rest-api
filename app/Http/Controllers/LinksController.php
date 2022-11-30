@@ -44,7 +44,7 @@ class LinksController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -92,23 +92,48 @@ class LinksController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param  int    $id
+     *
+     * @return JsonResponse
      */
     public function update(Request $request, $id)
     {
-        //
+        //изменение уже созданной ссылки
+        $data = $request->only([
+            'originalUrl',
+            'isPublic',
+            'shortCode',
+        ]);
+
+        try {
+            $link = $this->linkService->update($data, $id);
+        } catch (\Exception $e) {
+            return $this->error('', $e->getMessage(), 500);
+        }
+
+        return $this->success([
+            'link' => $link
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return JsonResponse
      */
     public function destroy($id)
     {
-        //
+        try {
+            $this->linkService->delete($id);
+        } catch (\Exception $e) {
+            return $this->error('', $e->getMessage(), 500);
+        }
+
+        return $this->success([
+            'message' => 'link was deleted'
+        ]);
     }
 }

@@ -27,25 +27,36 @@ class LinkRepository
         ]);
         return new LinksResource($link);
     }
-//
-//    public function update($linkId, string $shortCode, LinkDetails $linkDetails) : Link
-//    {
-//
-//    }
-//
-//    public function delete($linkId) : void
-//    {
-//
-//    }
-//
-    public function getById($linkId) //: Link
+
+    public function update($data, $linkId)//$linkId, string $shortCode, LinkDetails $linkDetails) : Link
     {
         $userId = $this->link->where('id', $linkId)->get('userId');
 
-        if(Auth::user()->id === $userId[0]['userId'])
+        if(Auth::user()->id === $userId[0]['userId']) {
+            $link = $this->link->find($linkId);
+            $link->update($data);
+            return new LinksResource($link);
+        }
+        else throw new \Exception('you dont have access');
+    }
+
+    public function delete($linkId) : void
+    {
+        $link = $this->link->find($linkId);
+        if(isset($link))
+            $link->delete();
+        else throw new \Exception('this link doesnt exist');
+    }
+
+    public function getById($linkId)
+    {
+        $userId = $this->link->where('id', $linkId)->get('userId');
+
+        if(Auth::user()->id === $userId[0]['userId']) {
             return $this->link
                 ->where('id', $linkId)
                 ->get();
+        }
         else throw new \Exception('you dont have access');
     }
 

@@ -44,6 +44,25 @@ class LinkService
     {
         return $this->linkRepository->getById($id);
     }
+
+    public function update($data, $linkId)
+    {
+        $validator = Validator::make($data, [
+            'originalUrl' => 'bail|max:255|string',
+            'shortCode' => 'bail|string',
+            'isPublic' => 'bail|boolean'
+        ]);
+
+        if($validator->fails())
+            throw new InvalidArgumentException($validator->errors()->first());
+
+        return $this->linkRepository->update($data, $linkId);
+    }
+
+    public function delete($id)
+    {
+        $this->linkRepository->delete($id);
+    }
 }
 
 
