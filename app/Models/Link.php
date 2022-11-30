@@ -25,10 +25,10 @@ class Link extends Model implements LinkInterface
 
     public $timestamps = false;
 
-    public function user()
-    {
-        return $this->belongsTo(\App\Models\User::class);
-    }
+//    public function user()
+//    {
+//        return $this->belongsTo(\App\Models\User::class);
+//    }
 
     public function getUserId()
     {

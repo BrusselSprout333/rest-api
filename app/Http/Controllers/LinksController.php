@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreLinkRequest;
 use App\Http\Resources\LinksResource;
 use App\Models\Link;
+use App\Services\LinkService;
 use App\Traits\HttpResponses;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,16 +15,29 @@ class LinksController extends Controller
 {
     use HttpResponses;
 
+    protected LinkService $linkService;
+
+    public function __construct(LinkService $linkService)
+    {
+        $this->linkService = $linkService;
+    }
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        return LinksResource::collection(
-            Link::where('userId', Auth::user()->id)->get()
-        );
+        try {
+            $links = $this->linkService->getAll();
+        } catch (\Exception $e)
+        {
+            return $this->error('', $e->getMessage(), 500);
+        }
+
+        return $this->success([
+            'links' => $links
+        ]);
     }
 
 
@@ -31,44 +46,48 @@ class LinksController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      *
-     * @return LinksResource
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(StoreLinkRequest $request)
     {
         //создание ссылки
-        $request->validated($request->all());
-
-        $link = Link::create([
-            'userId' => Auth::user()->id,
-            'originalUrl' => $request->originalUrl,
-            'shortCode' => $this->createShortCode(),//->unique,
-            'isPublic' => $request->isPublic,
-            'createdDate' => date("y-m-d")
+        $data = $request->only([
+            'originalUrl',
+            'isPublic',
         ]);
-        return new LinksResource($link);
+
+        try {
+            $link = $this->linkService->create($data);
+        } catch (\Exception $e)
+        {
+            return $this->error('', $e->getMessage(), 500);
+        }
+
+        return $this->success([
+            'link' => $link
+        ]);
     }
 
     /**
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return JsonResponse
      */
-    public function show($id)
+    public function show($id): JsonResponse
     {
-        //
+        try {
+            $link = $this->linkService->getById($id);
+        } catch (\Exception $e) {
+            return $this->error('', $e->getMessage(), 500);
+        }
+
+        return $this->success([
+            'link' => $link
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -91,11 +110,5 @@ class LinksController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    private function createShortCode()
-    {
-        $permitted_chars = '0123456789abcdefghijklmnopqrstuvwxyz';
-        return substr(str_shuffle($permitted_chars), 0, 8);
     }
 }
