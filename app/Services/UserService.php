@@ -14,5 +14,10 @@ class UserService
     {
         return Auth::user()->id;
     }
+
+    public function isAuthenticated()
+    {
+        return Auth::check();
+    }
 }
 

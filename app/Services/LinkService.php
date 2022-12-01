@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Link;
 use App\Repositories\LinkRepository;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
@@ -30,31 +29,28 @@ class LinkService
         return $this->linkRepository->getById($id);
     }
 
-    public function create($data)
+    public function getByShortCode($shortCode)
     {
-        $validator = Validator::make($data, [
-            'originalUrl' => 'required|max:255|string',
-            'isPublic' => 'required|boolean'
-        ]);
-
-        if($validator->fails())
-            throw new InvalidArgumentException($validator->errors()->first());
-
-        return $this->linkRepository->create($data);
+        return $this->linkRepository->getByShortCode($shortCode);
     }
 
-    public function update($data, $linkId)
+    public function create($userId, $linkDetails)
     {
-        $validator = Validator::make($data, [
-            'originalUrl' => 'bail|max:255|string',
-            'shortCode' => 'bail|string',
-            'isPublic' => 'bail|boolean'
-        ]);
+        return $this->linkRepository->create($userId, $linkDetails);
+    }
 
-        if($validator->fails())
-            throw new InvalidArgumentException($validator->errors()->first());
+    public function update($data, $linkId)//, $shortCode, $linkDetails)
+    {
+//        $validator = Validator::make($data, [
+//            'originalUrl' => 'bail|max:255|string',
+//            'shortCode' => 'bail|string',
+//            'isPublic' => 'bail|boolean'
+//        ]);
+//
+//        if($validator->fails())
+//            throw new InvalidArgumentException($validator->errors()->first());
 
-        return $this->linkRepository->update($data, $linkId);
+        return $this->linkRepository->update($data, $linkId);//, $shortCode, $linkDetails);
     }
 
     public function delete($id)

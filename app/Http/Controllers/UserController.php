@@ -20,21 +20,7 @@ class UserController extends Controller
 
     public function isAuthenticated()
     {
-//        try {
-//            //return Auth::user()->getAuthIdentifier();
-//           // $check = Auth::check();
-//
-//            //    return ! is_null($this->user());
-//
-//            return $this->success([
-//                'result' => Auth::check(),
-//            ]);
-//
-//            //return Auth::attempt($request->only(['email', 'password'])) ? true : false;
-//        } catch (\Exception $e)
-//        {
-//            return $this->error('', $e->getMessage(), 500);
-//        }
+        return $this->userService->isAuthenticated();
     }
 
     public function getName()

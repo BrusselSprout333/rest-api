@@ -3,8 +3,8 @@
 namespace App\Repositories;
 
 use App\Http\Controllers\UserController;
-use App\Http\Resources\LinksResource;
 use App\Models\Link;
+use App\Models\LinkDetails;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,22 +19,38 @@ class LinkRepository
         $this->user = $user;
     }
 
-    public function create($data)//$userId, LinkDetails $linkDetails) : Link
+    public function create(int $userId, LinkDetails $linkDetails) : Link
     {
+//        $this->link = new Link();
+//        $this->link->originalUrl = $data['originalUrl'];
+//        $this->link->isPublic = $data['isPublic'];
+//        $this->link->userId = Auth::user()->id;//$this->user->getId();
+//        $this->link->shortCode = $this->createShortCode();
+//        $this->link->createdDate = date("y-m-d");
+//
+//       // $this->link->save();
+//        return $this->link;
+
         return Link::create([
-            'userId' => $this->user->getId(),
-            'originalUrl' => $data['originalUrl'],
+            'userId' => $userId,
+            'originalUrl' => $linkDetails->originalUrl,
             'shortCode' => $this->createShortCode(),//->unique,
-            'isPublic' => $data['isPublic'],
+            'isPublic' => $linkDetails->isPublic,
             'createdDate' => date("y-m-d")
         ]);
     }
 
-    public function update($data, $linkId)//$linkId, string $shortCode, LinkDetails $linkDetails) : Link
+    public function update($data, int $linkId)//, string $shortCode, LinkDetails $linkDetails)//string $shortCode, LinkDetails $linkDetails) : Link
     {
         if($this->equalUserId($linkId)) {
             $link = $this->link->find($linkId);
+
             $link->update($data);
+//            $link->update([
+//                'shortCode' => $shortCode,
+//                'isPublic' => $linkDetails->isPublic,
+//                'originalUrl' => $linkDetails->originalUrl,
+//            ]);
             return $link;
         }
         else throw new \Exception('you dont have access');
@@ -59,11 +75,11 @@ class LinkRepository
         else throw new \Exception('you dont have access');
     }
 
-//
-//    public function getByShortCode($shortCode) : Link
-//    {
-//
-//    }
+
+    public function getByShortCode(string $shortCode) : Link
+    {
+        return $this->link->where('shortCode', $shortCode)->first();
+    }
 
     public function getAll() : Collection
     {

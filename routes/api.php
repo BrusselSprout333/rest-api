@@ -36,8 +36,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/getName', [UserController::class, 'getName']);
     Route::get('/getId', [UserController::class, 'getId']);
     Route::resource('/links', LinksController::class);
+    Route::post('/isAuthenticated', [UserController::class, 'isAuthenticated']);
+    Route::get('/links/findByShortCode/{shortCode}', [LinksController::class, 'getByShortCode']);
 });
 
-
-// controller->AuthController
-//Route::post('/register', [\App\Http\Controllers\Controller::class, 'register']);
