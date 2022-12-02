@@ -1,11 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
 use App\Services\UserService;
 use App\Traits\HttpResponses;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {

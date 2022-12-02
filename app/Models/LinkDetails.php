@@ -1,16 +1,16 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Interfaces\LinkInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class LinkDetails extends Model //implements LinkInterface
+class LinkDetails extends Link
 {
     use HasFactory;
-    public ?bool $isPublic;
-    public string $originalUrl;
+
+    private ?bool $isPublic;
+    private ?string $originalUrl;
     private Link $link;
 
     public function __construct(Link $link)
@@ -19,31 +19,23 @@ class LinkDetails extends Model //implements LinkInterface
         $this->link = $link;
     }
 
-    public function getIsPublic()
+    public function getIsPublic(): ?bool
     {
         return $this->isPublic;
     }
 
-    public function getOriginalUrl()
+    public function getOriginalUrl(): ?string
     {
         return $this->originalUrl;
     }
 
     public function setOriginalUrl($originalUrl)
     {
-        $this->originalUrl = $originalUrl ?? '';
+        $this->originalUrl = $originalUrl ?? null;
     }
 
     public function setIsPublic($isPublic)
     {
         $this->isPublic = $isPublic ?? null;
-    }
-
-    public function setAll(array $request)
-    {
-        if(isset($request['isPublic']))
-            $this->isPublic = $request['isPublic'];
-        if(isset($request['originalUrl']))
-            $this->originalUrl = $request['originalUrl'];
     }
 }

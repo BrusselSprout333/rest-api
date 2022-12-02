@@ -1,23 +1,15 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Interfaces\LinkInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 
-class Link extends Model// implements LinkInterface
+class Link extends Model
 {
     use HasFactory;
-//    public int $Id;
-//    public int $userId;
-//    public string $originalUrl;
-//    public string $shortCode;
-//    public bool $isPublic;
-//    public string $createdDate;
 
     protected $fillable = [
         'userId',
@@ -54,35 +46,35 @@ class Link extends Model// implements LinkInterface
     {
         $this->originalUrl = $originalUrl;
     }
-//
-//
-//    public function getShortCode($shortCode)
-//    {
-//        return $this->shortCode;
-//    }
-//
+
+
+    public function getShortCode()
+    {
+        return $this->shortCode;
+    }
+
     public function setShortCode($shortCode)
     {
         $this->shortCode = $shortCode;
     }
-//
-//
-//    public function getIsPublic()
-//    {
-//        return $this->isPublic;
-//    }
-//
+
+
+    public function getIsPublic()
+    {
+        return $this->isPublic;
+    }
+
     public function setIsPublic($isPublic)
     {
         $this->isPublic = $isPublic;
     }
-//
-//
-//    public function getCreatedDate()
-//    {
-//        return $this->createdDate;
-//    }
-//
+
+
+    public function getCreatedDate()
+    {
+        return $this->createdDate;
+    }
+
     public function setCreatedDate($createdDate)
     {
         $this->createdDate = $createdDate;

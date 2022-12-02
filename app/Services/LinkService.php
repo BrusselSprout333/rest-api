@@ -1,15 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Services;
 
 use App\Repositories\LinkRepository;
-use Illuminate\Support\Facades\Validator;
-use InvalidArgumentException;
 
 
 class LinkService
 {
-    protected $linkRepository;
+    protected LinkRepository $linkRepository;
 
     public function __construct(LinkRepository $linkRepository)
     {
@@ -46,17 +45,8 @@ class LinkService
         return $this->linkRepository->create($userId, $linkDetails);
     }
 
-    public function update($linkId, $shortCode, $linkDetails)
+    public function update($linkId, ?string $shortCode, $linkDetails)
     {
-//        $validator = Validator::make($data, [
-//            'originalUrl' => 'bail|max:255|string',
-//            'shortCode' => 'bail|string',
-//            'isPublic' => 'bail|boolean'
-//        ]);
-//
-//        if($validator->fails())
-//            throw new InvalidArgumentException($validator->errors()->first());
-
         return $this->linkRepository->update($linkId, $shortCode, $linkDetails);
     }
 

@@ -1,16 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreLinkRequest;
-use App\Http\Requests\UpdateLinkRequest;
-use App\Models\Link;
 use App\Models\LinkDetails;
 use App\Services\LinkService;
 use App\Traits\HttpResponses;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class LinksController extends Controller
 {
@@ -26,10 +24,9 @@ class LinksController extends Controller
         $this->user = $user;
         $this->linkDetails = $linkDetails;
     }
+
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -48,7 +45,9 @@ class LinksController extends Controller
     /**
      * Display a link by shortcode.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @param $shortCode
+     *
+     * @return JsonResponse
      */
     public function getByShortCode($shortCode): JsonResponse
     {
@@ -63,6 +62,11 @@ class LinksController extends Controller
         ]);
     }
 
+    /**
+     * @param $shortCode
+     *
+     * @return JsonResponse
+     */
     public function getOriginalLink($shortCode): JsonResponse
     {
         try {
@@ -77,7 +81,9 @@ class LinksController extends Controller
     /**
      * Display a link by shortcode.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @param $userId
+     *
+     * @return JsonResponse
      */
     public function getAllByUser($userId): JsonResponse
     {
@@ -96,30 +102,29 @@ class LinksController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param StoreLinkRequest $request
      *
-
+     * @return JsonResponse
      */
-    public function store(StoreLinkRequest $request)
+    public function store(StoreLinkRequest $request): JsonResponse
     {
         //создание ссылки
-        $this->linkDetails->setOriginalUrl($request->originalUrl);// = $request->originalUrl;
-        $this->linkDetails->setIsPublic($request->isPublic);// = $request->isPublic;
+        $this->linkDetails->setOriginalUrl($request->originalUrl);
+        $this->linkDetails->setIsPublic($request->isPublic);
 
         try {
             $link = $this->linkService->create($this->user->getId(), $this->linkDetails);
-        } catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return $this->error('', $e->getMessage(), 500);
         }
 
-        return $this->success(['link' => $link]);
+        return $this->success($link);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param $linkId
      *
      * @return JsonResponse
      */
@@ -131,9 +136,7 @@ class LinksController extends Controller
             return $this->error('', $e->getMessage(), 500);
         }
 
-        return $this->success([
-            'link' => $link
-        ]);
+        return $this->success($link);
     }
 
 
@@ -141,16 +144,16 @@ class LinksController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param  int    $id
+     * @param         $linkId
      *
      * @return JsonResponse
      */
-    public function update(Request $request, $linkId)
+    public function update(Request $request, $linkId): JsonResponse
     {
         //изменение уже созданной ссылки
         $this->linkDetails->setIsPublic($request['isPublic']);
         $this->linkDetails->setOriginalUrl($request['originalUrl']);
-        $shortCode = $request['shortCode'] ?? '';
+        $shortCode = $request['shortCode'] ?? null;
 
         try {
             $link = $this->linkService->update($linkId, $shortCode, $this->linkDetails);
@@ -158,19 +161,17 @@ class LinksController extends Controller
             return $this->error('', $e->getMessage(), 500);
         }
 
-        return $this->success([
-            'link' => $link
-        ]);
+        return $this->success($link);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      *
      * @return JsonResponse
      */
-    public function destroy($id)
+    public function destroy(int $id): JsonResponse
     {
         try {
             $this->linkService->delete($id);
