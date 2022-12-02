@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Interfaces\LinkInterface;
@@ -10,12 +12,12 @@ use App\Models\User;
 class Link extends Model// implements LinkInterface
 {
     use HasFactory;
-    public int $Id;
-    public int $userId;
-    public string $originalUrl;
-    public string $shortCode;
-    public bool $isPublic;
-    public string $createdDate;
+//    public int $Id;
+//    public int $userId;
+//    public string $originalUrl;
+//    public string $shortCode;
+//    public bool $isPublic;
+//    public string $createdDate;
 
     protected $fillable = [
         'userId',
@@ -25,35 +27,33 @@ class Link extends Model// implements LinkInterface
         'createdDate',
     ];
 
-    protected $primaryKey = 'id';
-
     public $timestamps = false;
 
     public function user()
     {
         return $this->belongsTo(\App\Models\User::class);
     }
-//
-//    public function getUserId()
-//    {
-//        return $this->userId;
-//    }
-//
-//    public function setUserId($userId)
-//    {
-//        $this->userId = $userId;
-//    }
-//
-//
-//    public function getOriginalUrl()
-//    {
-//        return $this->originalUrl;
-//    }
-//
-//    public function setOriginalUrl($originalUrl)
-//    {
-//        $this->originalUrl = $originalUrl;
-//    }
+
+    public function getUserId()
+    {
+        return $this->userId;
+    }
+
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+    }
+
+
+    public function getOriginalUrl()
+    {
+        return $this->originalUrl;
+    }
+
+    public function setOriginalUrl($originalUrl)
+    {
+        $this->originalUrl = $originalUrl;
+    }
 //
 //
 //    public function getShortCode($shortCode)
@@ -61,10 +61,10 @@ class Link extends Model// implements LinkInterface
 //        return $this->shortCode;
 //    }
 //
-//    public function setShortCode($shortCode)
-//    {
-//        $this->shortCode = $shortCode;
-//    }
+    public function setShortCode($shortCode)
+    {
+        $this->shortCode = $shortCode;
+    }
 //
 //
 //    public function getIsPublic()
@@ -72,10 +72,10 @@ class Link extends Model// implements LinkInterface
 //        return $this->isPublic;
 //    }
 //
-//    public function setIsPublic($isPublic)
-//    {
-//        $this->isPublic = $isPublic;
-//    }
+    public function setIsPublic($isPublic)
+    {
+        $this->isPublic = $isPublic;
+    }
 //
 //
 //    public function getCreatedDate()
@@ -83,8 +83,8 @@ class Link extends Model// implements LinkInterface
 //        return $this->createdDate;
 //    }
 //
-//    public function setCreatedDate($createdDate)
-//    {
-//        $this->userId = $createdDate;
-//    }
+    public function setCreatedDate($createdDate)
+    {
+        $this->createdDate = $createdDate;
+    }
 }

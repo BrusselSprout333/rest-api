@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('links', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('userId');
-            $table->string('originalUrl');
-            $table->string('shortCode');
+            $table->string('originalUrl')->default(null);
+            $table->string('shortCode')->default(null);
             $table->boolean('isPublic')->default(true);
             $table->date('createdDate');
             $table->foreign('userId')

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreLinkRequest;
+use App\Http\Requests\UpdateLinkRequest;
 use App\Models\Link;
 use App\Models\LinkDetails;
 use App\Services\LinkService;
@@ -30,7 +31,7 @@ class LinksController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
         try {
             $links = $this->linkService->getAll();
@@ -45,11 +46,11 @@ class LinksController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a link by shortcode.
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getByShortCode($shortCode)
+    public function getByShortCode($shortCode): JsonResponse
     {
         try {
             $link = $this->linkService->getByShortCode($shortCode);
@@ -59,6 +60,35 @@ class LinksController extends Controller
 
         return $this->success([
             'link' => $link
+        ]);
+    }
+
+    public function getOriginalLink($shortCode): JsonResponse
+    {
+        try {
+            $originalUrl = $this->linkService->getOriginalLink($shortCode);
+        } catch (\Exception $e) {
+            return $this->error('', $e->getMessage(), 500);
+        }
+
+        return $this->success($originalUrl);
+    }
+
+    /**
+     * Display a link by shortcode.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAllByUser($userId): JsonResponse
+    {
+        try {
+            $links = $this->linkService->getAllByUser($userId);
+        } catch (\Exception $e) {
+            return $this->error('', $e->getMessage(), 500);
+        }
+
+        return $this->success([
+            'links' => $links
         ]);
     }
 
@@ -73,8 +103,8 @@ class LinksController extends Controller
     public function store(StoreLinkRequest $request)
     {
         //создание ссылки
-        $this->linkDetails->originalUrl = $request->originalUrl;
-        $this->linkDetails->isPublic = $request->isPublic;
+        $this->linkDetails->setOriginalUrl($request->originalUrl);// = $request->originalUrl;
+        $this->linkDetails->setIsPublic($request->isPublic);// = $request->isPublic;
 
         try {
             $link = $this->linkService->create($this->user->getId(), $this->linkDetails);
@@ -83,33 +113,7 @@ class LinksController extends Controller
             return $this->error('', $e->getMessage(), 500);
         }
 
-        return $this->success([
-            'status' => true,
-            'link' => $link
-        ]);
-
-//        return $this->success([
-//            'userId' => $link->userId,
-//            'originalUrl' => $link->originalUrl,
-//            'shortCode' => $link->shortCode,
-//            'isPublic' => $link->isPublic,
-//            'createdDate' => $link->createdDate,
-//        ]);
-
-
-//        $link->originalUrl = $data['originalUrl'];
-//        $link->isPublic = $data['isPublic'];
-//        $link->userId = Auth::id();//$this->user->getId();
-////        $this->link->shortCode = $this->createShortCode();
-//        $link->createdDate = date("y-m-d");
-//        // return $link;
-//        return response()->json([
-//            'status' => true,
-//            'originalUrl' => $link->originalUrl,
-//            'isPublic' => $link->isPublic,
-//            'userId' => $link->userId,
-//            'createdDate' => $link->createdDate,
-//        ], 200);
+        return $this->success(['link' => $link]);
     }
 
     /**
@@ -119,10 +123,10 @@ class LinksController extends Controller
      *
      * @return JsonResponse
      */
-    public function show($id): JsonResponse
+    public function show($linkId): JsonResponse
     {
         try {
-            $link = $this->linkService->getById($id);
+            $link = $this->linkService->getById($linkId);
         } catch (\Exception $e) {
             return $this->error('', $e->getMessage(), 500);
         }
@@ -144,18 +148,12 @@ class LinksController extends Controller
     public function update(Request $request, $linkId)
     {
         //изменение уже созданной ссылки
-        $data = $request->only([
-            'originalUrl',
-            'isPublic',
-            'shortCode',
-        ]);
-
-//        $this->linkDetails->originalUrl = $request->originalUrl;
-//        $this->linkDetails->isPublic = $request->isPublic;
-//        $shortCode = $request->shortCode;
+        $this->linkDetails->setIsPublic($request['isPublic']);
+        $this->linkDetails->setOriginalUrl($request['originalUrl']);
+        $shortCode = $request['shortCode'] ?? '';
 
         try {
-            $link = $this->linkService->update($data, $linkId);//, $shortCode, $this->linkDetails);
+            $link = $this->linkService->update($linkId, $shortCode, $this->linkDetails);
         } catch (\Exception $e) {
             return $this->error('', $e->getMessage(), 500);
         }

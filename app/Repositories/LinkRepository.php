@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repositories;
 
@@ -21,36 +22,39 @@ class LinkRepository
 
     public function create(int $userId, LinkDetails $linkDetails) : Link
     {
-//        $this->link = new Link();
-//        $this->link->originalUrl = $data['originalUrl'];
-//        $this->link->isPublic = $data['isPublic'];
-//        $this->link->userId = Auth::user()->id;//$this->user->getId();
+        $this->link->setUserId($userId);
+        $this->link->setIsPublic($linkDetails->getIsPublic());
+        $this->link->setShortCode($this->createShortCode());
+        $this->link->setOriginalUrl($linkDetails->getOriginalUrl());
+        $this->link->setCreatedDate(date("y-m-d"));
+        $this->link->save();
+        return $this->link;
+//        $this->link->originalUrl = $linkDetails->originalUrl;
+//        $this->link->isPublic = $linkDetails->isPublic;
+//        $this->link->userId = $userId;//$this->user->getId();
 //        $this->link->shortCode = $this->createShortCode();
 //        $this->link->createdDate = date("y-m-d");
-//
-//       // $this->link->save();
-//        return $this->link;
 
-        return Link::create([
-            'userId' => $userId,
-            'originalUrl' => $linkDetails->originalUrl,
-            'shortCode' => $this->createShortCode(),//->unique,
-            'isPublic' => $linkDetails->isPublic,
-            'createdDate' => date("y-m-d")
-        ]);
+
+//        return Link::create([
+//            'userId' => $userId,
+//            'originalUrl' => $linkDetails->originalUrl,
+//            'shortCode' => $this->createShortCode(),//->unique,
+//            'isPublic' => $linkDetails->isPublic,
+//            'createdDate' => date("y-m-d")
+//        ]);
     }
 
-    public function update($data, int $linkId)//, string $shortCode, LinkDetails $linkDetails)//string $shortCode, LinkDetails $linkDetails) : Link
+    public function update(int $linkId, string $shortCode, LinkDetails $linkDetails) : Link
     {
         if($this->equalUserId($linkId)) {
             $link = $this->link->find($linkId);
 
-            $link->update($data);
-//            $link->update([
-//                'shortCode' => $shortCode,
-//                'isPublic' => $linkDetails->isPublic,
-//                'originalUrl' => $linkDetails->originalUrl,
-//            ]);
+            $link->update([
+                'shortCode' => $shortCode ?? $link->getShortCode(),
+                'isPublic' => $linkDetails->getIsPublic() ?? $link->getIsPublic(),
+                'originalUrl' => $linkDetails->getOriginalUrl() ?? $link->getOriginalUrl(),
+            ]);
             return $link;
         }
         else throw new \Exception('you dont have access');
@@ -67,14 +71,22 @@ class LinkRepository
         else throw new \Exception('you dont have access');
     }
 
-    public function getById($linkId) : Link
+    public function getById($linkId) //: Link
     {
-        if($this->equalUserId($linkId)) {
-            return $this->link->find($linkId);
-        }
-        else throw new \Exception('you dont have access');
+        //$userId = $this->link->where('id', $linkId)->get('userId');
+        $link = $this->link->find($linkId);
+        $data = [$link->getUserId(), $link->getOriginalUrl()];
+        return $data;
+//        if($this->equalUserId($linkId)) {
+//            return $this->link->find($linkId);
+//        }
+//        else throw new \Exception('you dont have access');
     }
 
+    public function getOriginalLink($shortCode) : Link
+    {
+        return $this->link->where('shortCode', $shortCode)->get('originalUrl')->first();
+    }
 
     public function getByShortCode(string $shortCode) : Link
     {
@@ -86,12 +98,10 @@ class LinkRepository
         return $this->link->get();
     }
 
-//    public function getAllByUser($userId) : Collection
-//    {
-//          return LinksResource::collection(
-//            Link::where('userId', Auth::user()->id)->get()
-//        );
-//    }
+    public function getAllByUser(int $userId) : Collection
+    {
+        return $this->link->where('userId', $userId)->get();
+    }
 
     private function createShortCode()
     {
