@@ -5,21 +5,21 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\StoreUserRequest;
+use App\Interfaces\AuthServiceInterface;
 use App\Traits\HttpResponses;
 use App\Services\AuthService;
 
 class AuthController extends Controller
 {
     use HttpResponses;
+   // protected AuthService $authService;
 
-    protected AuthService $authService;
-
-    public function __construct(AuthService $authService)
+    public function __construct(protected AuthServiceInterface $authService)
     {
-        $this->authService = $authService;
+       // $this->authService = $authService;
     }
 
-    public function login(LoginUserRequest $request)
+    public function login(LoginUserRequest $request): \Illuminate\Http\JsonResponse
     {
         $data = $request->only([
             'email',
@@ -39,7 +39,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function register(StoreUserRequest $request)
+    public function register(StoreUserRequest $request): \Illuminate\Http\JsonResponse
     {
         $data = $request->only([
             'name',
@@ -60,7 +60,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function logout()
+    public function logout(): \Illuminate\Http\JsonResponse
     {
         try {
             $this->authService->logout();

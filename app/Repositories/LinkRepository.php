@@ -4,19 +4,19 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Http\Controllers\UserController;
+use App\Interfaces\LinkRepositoryInterface;
 use App\Models\Link;
 use App\Models\LinkDetails;
 use Illuminate\Support\Collection;
 
-class LinkRepository
+class LinkRepository implements LinkRepositoryInterface
 {
-    protected Link $link;
-    protected UserController $user;
+ //   protected Link $link;
+   // protected UserController $user;
 
-    public function __construct(Link $link, UserController $user)
+    public function __construct(protected Link $link, protected UserController $user)
     {
-        $this->link = $link;
-        $this->user = $user;
+        //
     }
 
     public function create(int $userId, LinkDetails $linkDetails) : Link
@@ -39,7 +39,7 @@ class LinkRepository
 
                 $link->update([
                     'shortCode' => $shortCode ?? $link->getShortCode(),
-                    'isPublic' => $linkDetails->getIsPublic() ?? $link->getIsPublic(),
+                    'isPublic' => (bool)$linkDetails->getIsPublic() ?? $link->getIsPublic(),
                     'originalUrl' => $linkDetails->getOriginalUrl() ?? $link->getOriginalUrl(),
                 ]);
                 return $link;
@@ -48,7 +48,7 @@ class LinkRepository
         } else throw new \Exception('this link doesnt exist');
     }
 
-    public function delete($linkId) : void
+    public function delete(int $linkId) : void
     {
         if($this->link->find($linkId)) {
             if ($this->equalUserId($linkId)) {
@@ -59,18 +59,20 @@ class LinkRepository
         } else throw new \Exception('this link doesnt exist');
     }
 
-    public function getById($linkId) : Link
+    public function getById(int $linkId) : Link
     {
         if($this->link->find($linkId)) {
-            if($this->equalUserId($linkId)) {
+            if($this->user->isAuthenticated()) {
+          //  if($this->equalUserId($linkId)) {
                 return $this->link->find($linkId);
             }
             else throw new \Exception('you dont have access');
         } else throw new \Exception('this link doesnt exist');
     }
 
-    public function getOriginalLink($shortCode) : Link
+    public function getOriginalLink(string $shortCode) : Link
     {
+       // $link = $this->link->where($this->link->getShortCode(), $shortCode);
         return $this->link->where('shortCode', $shortCode)->get('originalUrl')->first()
             ?? throw new \Exception('this link doesnt exist');
     }

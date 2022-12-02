@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreLinkRequest;
+use App\Interfaces\LinkServiceInterface;
 use App\Models\LinkDetails;
 use App\Services\LinkService;
 use App\Traits\HttpResponses;
@@ -14,15 +15,18 @@ class LinksController extends Controller
 {
     use HttpResponses;
 
-    protected LinkService $linkService;
-    protected UserController $user;
-    protected LinkDetails $linkDetails;
+//    protected LinkService $linkService;
+//    protected UserController $user;
+//    protected LinkDetails $linkDetails;
 
-    public function __construct(LinkService $linkService, UserController $user, LinkDetails $linkDetails)
-    {
-        $this->linkService = $linkService;
-        $this->user = $user;
-        $this->linkDetails = $linkDetails;
+    public function __construct(
+        protected LinkServiceInterface $linkService,
+        protected UserController $user,
+        protected LinkDetails $linkDetails
+    ) {
+//        $this->linkService = $linkService;
+//        $this->user = $user;
+//        $this->linkDetails = $linkDetails;
     }
 
     /**
@@ -144,14 +148,14 @@ class LinksController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param         $linkId
+     * @param int     $linkId
      *
      * @return JsonResponse
      */
-    public function update(Request $request, $linkId): JsonResponse
+    public function update(Request $request, int $linkId): JsonResponse
     {
         //изменение уже созданной ссылки
-        $this->linkDetails->setIsPublic($request['isPublic']);
+        $this->linkDetails->setIsPublic((bool)$request['isPublic']);
         $this->linkDetails->setOriginalUrl($request['originalUrl']);
         $shortCode = $request['shortCode'] ?? null;
 

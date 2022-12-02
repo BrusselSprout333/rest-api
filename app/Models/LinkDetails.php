@@ -11,9 +11,9 @@ class LinkDetails extends Link
 
     private ?bool $isPublic;
     private ?string $originalUrl;
-    private Link $link;
+   // private Link $link;
 
-    public function __construct(Link $link)
+    public function __construct(private Link $link)
     {
         parent::__construct();
         $this->link = $link;
@@ -29,12 +29,12 @@ class LinkDetails extends Link
         return $this->originalUrl;
     }
 
-    public function setOriginalUrl($originalUrl)
+    public function setOriginalUrl(string $originalUrl)
     {
         $this->originalUrl = $originalUrl ?? null;
     }
 
-    public function setIsPublic($isPublic)
+    public function setIsPublic(bool $isPublic)
     {
         $this->isPublic = $isPublic ?? null;
     }

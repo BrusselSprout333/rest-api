@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Interfaces\AuthServiceInterface;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 
-class AuthService
+class AuthService implements AuthServiceInterface
 {
     public function login($data)
     {

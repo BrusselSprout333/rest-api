@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Interfaces\UserServiceInterface;
 use Illuminate\Support\Facades\Auth;
 
-class UserService
+class UserService implements UserServiceInterface
 {
     public function getName()
     {
@@ -17,7 +18,7 @@ class UserService
         return Auth::user()->id;
     }
 
-    public function isAuthenticated()
+    public function isAuthenticated(): bool
     {
         return Auth::check();
     }

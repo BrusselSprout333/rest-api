@@ -31,7 +31,7 @@ class Link extends Model
         return $this->userId;
     }
 
-    public function setUserId($userId)
+    public function setUserId(int $userId)
     {
         $this->userId = $userId;
     }
@@ -42,7 +42,7 @@ class Link extends Model
         return $this->originalUrl;
     }
 
-    public function setOriginalUrl($originalUrl)
+    public function setOriginalUrl(string $originalUrl)
     {
         $this->originalUrl = $originalUrl;
     }
@@ -53,7 +53,7 @@ class Link extends Model
         return $this->shortCode;
     }
 
-    public function setShortCode($shortCode)
+    public function setShortCode(string $shortCode)
     {
         $this->shortCode = $shortCode;
     }
@@ -64,7 +64,7 @@ class Link extends Model
         return $this->isPublic;
     }
 
-    public function setIsPublic($isPublic)
+    public function setIsPublic(bool $isPublic)
     {
         $this->isPublic = $isPublic;
     }
@@ -75,7 +75,7 @@ class Link extends Model
         return $this->createdDate;
     }
 
-    public function setCreatedDate($createdDate)
+    public function setCreatedDate(string $createdDate)
     {
         $this->createdDate = $createdDate;
     }

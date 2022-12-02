@@ -3,16 +3,18 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Interfaces\LinkServiceInterface;
+use App\Models\LinkDetails;
 use App\Repositories\LinkRepository;
 
 
-class LinkService
+class LinkService implements LinkServiceInterface
 {
-    protected LinkRepository $linkRepository;
+  //  protected LinkRepository $linkRepository;
 
-    public function __construct(LinkRepository $linkRepository)
+    public function __construct(protected LinkRepository $linkRepository)
     {
-        $this->linkRepository = $linkRepository;
+   //     $this->linkRepository = $linkRepository;
     }
 
     public function getAll()
@@ -20,39 +22,39 @@ class LinkService
         return $this->linkRepository->getAll();
     }
 
-    public function getAllByUser($userId)
+    public function getAllByUser(int $userId)
     {
         return $this->linkRepository->getAllByUser($userId);
     }
 
-    public function getById($id)
+    public function getById(int $linkId)
     {
-        return $this->linkRepository->getById($id);
+        return $this->linkRepository->getById($linkId);
     }
 
-    public function getByShortCode($shortCode)
+    public function getByShortCode(string $shortCode)
     {
         return $this->linkRepository->getByShortCode($shortCode);
     }
 
-    public function getOriginalLink($shortCode)
+    public function getOriginalLink(string $shortCode)
     {
         return $this->linkRepository->getOriginalLink($shortCode);
     }
 
-    public function create($userId, $linkDetails)
+    public function create(int $userId, LinkDetails $linkDetails)
     {
         return $this->linkRepository->create($userId, $linkDetails);
     }
 
-    public function update($linkId, ?string $shortCode, $linkDetails)
+    public function update(int $linkId, ?string $shortCode, LinkDetails $linkDetails)
     {
         return $this->linkRepository->update($linkId, $shortCode, $linkDetails);
     }
 
-    public function delete($id)
+    public function delete(int $linkId)
     {
-        $this->linkRepository->delete($id);
+        $this->linkRepository->delete($linkId);
     }
 }
 
