@@ -3,8 +3,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\OriginalLinkAlreadyExistsException;
 use App\Http\Requests\StoreLinkRequest;
+use App\Http\Requests\UpdateLinkRequest;
 use App\Interfaces\LinkServiceInterface;
+use App\Models\Link;
 use App\Models\LinkDetails;
 use App\Services\LinkService;
 use App\Traits\HttpResponses;
@@ -15,19 +18,12 @@ class LinksController extends Controller
 {
     use HttpResponses;
 
-//    protected LinkService $linkService;
-//    protected UserController $user;
-//    protected LinkDetails $linkDetails;
-
     public function __construct(
         protected LinkServiceInterface $linkService,
         protected UserController $user,
-        protected LinkDetails $linkDetails
-    ) {
-//        $this->linkService = $linkService;
-//        $this->user = $user;
-//        $this->linkDetails = $linkDetails;
-    }
+        protected LinkDetails $linkDetails,
+        protected Link $link
+    ) {}
 
     /**
      * @return JsonResponse
@@ -117,10 +113,17 @@ class LinksController extends Controller
         $this->linkDetails->setIsPublic((bool)$request->isPublic);
 
         try {
+            if($this->link->where('originalUrl', $this->linkDetails->getOriginalUrl())->first()) {
+                throw new OriginalLinkAlreadyExistsException('Note: This link already exists. It will be recreated');
+            }
             $link = $this->linkService->create($this->user->getId(), $this->linkDetails);
         } catch (\Exception $e) {
             return $this->error('', $e->getMessage(), 500);
         }
+//        catch (\OriginalLinkAlreadyExistsException $e)
+//        {
+//            $link = $this->linkService->create($this->user->getId(), $this->linkDetails, true);
+//        }
 
         return $this->success($link);
     }
@@ -132,7 +135,7 @@ class LinksController extends Controller
      *
      * @return JsonResponse
      */
-    public function show($linkId): JsonResponse
+    public function show(int $linkId): JsonResponse
     {
         try {
             $link = $this->linkService->getById($linkId);
@@ -147,16 +150,16 @@ class LinksController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
-     * @param int     $linkId
+     * @param UpdateLinkRequest $request
+     * @param int               $linkId
      *
      * @return JsonResponse
      */
-    public function update(Request $request, int $linkId): JsonResponse
+    public function update(UpdateLinkRequest $request, int $linkId): JsonResponse
     {
         //изменение уже созданной ссылки
-        $this->linkDetails->setIsPublic((bool)$request['isPublic']);
-        $this->linkDetails->setOriginalUrl($request['originalUrl']);
+        $this->linkDetails->setIsPublic((bool)$request->isPublic);
+        $this->linkDetails->setOriginalUrl($request->originalUrl);
         $shortCode = $request['shortCode'] ?? null;
 
         try {

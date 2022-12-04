@@ -10,11 +10,8 @@ use App\Repositories\LinkRepository;
 
 class LinkService implements LinkServiceInterface
 {
-  //  protected LinkRepository $linkRepository;
-
     public function __construct(protected LinkRepository $linkRepository)
     {
-   //     $this->linkRepository = $linkRepository;
     }
 
     public function getAll()
@@ -42,9 +39,9 @@ class LinkService implements LinkServiceInterface
         return $this->linkRepository->getOriginalLink($shortCode);
     }
 
-    public function create(int $userId, LinkDetails $linkDetails)
+    public function create(int $userId, LinkDetails $linkDetails, ?bool $recreate = false)
     {
-        return $this->linkRepository->create($userId, $linkDetails);
+        return $this->linkRepository->create($userId, $linkDetails, $recreate);
     }
 
     public function update(int $linkId, ?string $shortCode, LinkDetails $linkDetails)
