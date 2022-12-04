@@ -6,6 +6,9 @@ namespace App\Services;
 use App\Interfaces\LinkServiceInterface;
 use App\Models\LinkDetails;
 use App\Repositories\LinkRepository;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
 
 
 class LinkService implements LinkServiceInterface
@@ -46,12 +49,36 @@ class LinkService implements LinkServiceInterface
 
     public function update(int $linkId, ?string $shortCode, LinkDetails $linkDetails)
     {
-        return $this->linkRepository->update($linkId, $shortCode, $linkDetails);
+        DB::beginTransaction();
+        try {
+            $link = $this->linkRepository->update($linkId, $shortCode,
+                $linkDetails);
+        } catch (\Exception $e)
+        {
+            DB::rollBack();
+            Log::info($e->getMessage());
+
+            throw new InvalidArgumentException($e->getMessage());
+        }
+        DB::commit();
+
+        return $link;
     }
 
     public function delete(int $linkId)
     {
-        $this->linkRepository->delete($linkId);
+        DB::beginTransaction();
+        try {
+            $this->linkRepository->delete($linkId);
+        }
+        catch (\Exception $e)
+        {
+            DB::rollBack();
+            Log::info($e->getMessage());
+
+            throw new InvalidArgumentException($e->getMessage());
+        }
+        DB::commit();
     }
 }
 

@@ -42,7 +42,7 @@ class LinkRepository implements LinkRepositoryInterface
                 $link = $this->link->find($linkId);
 
                 if($this->link->where('shortCode', $shortCode)->first())
-                    throw new Exception('This shortcode already exists');
+                    throw new Exception('This shortCode already exists');
                 $link->update([
                     'shortCode' => $shortCode ?? $link->getShortCode(),
                     'isPublic' => $linkDetails->getIsPublic() ?? $link->getIsPublic(),

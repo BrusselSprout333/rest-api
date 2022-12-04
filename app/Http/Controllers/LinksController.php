@@ -160,7 +160,7 @@ class LinksController extends Controller
         //изменение уже созданной ссылки
         $this->linkDetails->setIsPublic((bool)$request->isPublic);
         $this->linkDetails->setOriginalUrl($request->originalUrl);
-        $shortCode = $request['shortCode'] ?? null;
+        $shortCode = $request->shortCode ?? null;
 
         try {
             $link = $this->linkService->update($linkId, $shortCode, $this->linkDetails);

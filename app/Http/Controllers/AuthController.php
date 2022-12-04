@@ -12,22 +12,18 @@ use App\Services\AuthService;
 class AuthController extends Controller
 {
     use HttpResponses;
-   // protected AuthService $authService;
 
     public function __construct(protected AuthServiceInterface $authService)
     {
-       // $this->authService = $authService;
     }
 
     public function login(LoginUserRequest $request): \Illuminate\Http\JsonResponse
     {
-        $data = $request->only([
-            'email',
-            'password'
-        ]);
+        $email = $request->email;
+        $password = $request->password;
 
         try {
-            $user = $this->authService->login($data);
+            $user = $this->authService->login($email, $password);
         } catch (\Exception $e)
         {
             return $this->error('', $e->getMessage(), 500);
@@ -41,14 +37,12 @@ class AuthController extends Controller
 
     public function register(StoreUserRequest $request): \Illuminate\Http\JsonResponse
     {
-        $data = $request->only([
-            'name',
-            'email',
-            'password'
-        ]);
+        $name = $request->name;
+        $email = $request->email;
+        $password = $request->password;
 
         try {
-            $user = $this->authService->register($data);
+            $user = $this->authService->register($name, $email, $password);
         } catch (\Exception $e)
         {
             return $this->error('', $e->getMessage(), 500);
