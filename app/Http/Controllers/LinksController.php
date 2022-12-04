@@ -120,10 +120,6 @@ class LinksController extends Controller
         } catch (\Exception $e) {
             return $this->error('', $e->getMessage(), 500);
         }
-//        catch (\OriginalLinkAlreadyExistsException $e)
-//        {
-//            $link = $this->linkService->create($this->user->getId(), $this->linkDetails, true);
-//        }
 
         return $this->success($link);
     }
