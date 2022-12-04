@@ -53,7 +53,7 @@ class LinksController extends Controller
      *
      * @return JsonResponse
      */
-    public function getByShortCode($shortCode): JsonResponse
+    public function getByShortCode(string $shortCode): JsonResponse
     {
         try {
             $link = $this->linkService->getByShortCode($shortCode);
@@ -71,7 +71,7 @@ class LinksController extends Controller
      *
      * @return JsonResponse
      */
-    public function getOriginalLink($shortCode): JsonResponse
+    public function getOriginalLink(string $shortCode): JsonResponse
     {
         try {
             $originalUrl = $this->linkService->getOriginalLink($shortCode);
@@ -89,7 +89,7 @@ class LinksController extends Controller
      *
      * @return JsonResponse
      */
-    public function getAllByUser($userId): JsonResponse
+    public function getAllByUser(int $userId): JsonResponse
     {
         try {
             $links = $this->linkService->getAllByUser($userId);
@@ -114,7 +114,7 @@ class LinksController extends Controller
     {
         //создание ссылки
         $this->linkDetails->setOriginalUrl($request->originalUrl);
-        $this->linkDetails->setIsPublic($request->isPublic);
+        $this->linkDetails->setIsPublic((bool)$request->isPublic);
 
         try {
             $link = $this->linkService->create($this->user->getId(), $this->linkDetails);

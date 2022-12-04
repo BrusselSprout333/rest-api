@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Helpers\Utilites\ShortLinkGenerator;
 use App\Http\Controllers\LinksController;
 use App\Http\Controllers\UserController;
 use App\Interfaces\AuthServiceInterface;
@@ -29,7 +30,10 @@ class AppServiceProvider extends ServiceProvider
             return new AuthService();
         });
         $this->app->bind(LinkServiceInterface::class, function () {
-            return new LinkService(new LinkRepository(new Link(), new UserController(new UserService())));
+            return new LinkService(new LinkRepository(
+                new Link(),
+                new UserController(new UserService()),
+                new ShortLinkGenerator(new Link())));
         });
         $this->app->bind(UserServiceInterface::class, function () {
             return new UserService();

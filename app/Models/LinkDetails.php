@@ -29,12 +29,12 @@ class LinkDetails extends Link
         return $this->originalUrl;
     }
 
-    public function setOriginalUrl(string $originalUrl)
+    public function setOriginalUrl(?string $originalUrl)
     {
         $this->originalUrl = $originalUrl ?? null;
     }
 
-    public function setIsPublic(bool $isPublic)
+    public function setIsPublic(?bool $isPublic)
     {
         $this->isPublic = $isPublic ?? null;
     }
