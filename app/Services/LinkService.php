@@ -9,11 +9,13 @@ use App\Repositories\LinkRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
+use App\Models\Link;
+use App\Exceptions\OriginalLinkAlreadyExistsException;
 
 
 class LinkService implements LinkServiceInterface
 {
-    public function __construct(protected LinkRepository $linkRepository)
+    public function __construct(protected LinkRepository $linkRepository, private Link $link)
     {
     }
 
@@ -44,7 +46,13 @@ class LinkService implements LinkServiceInterface
 
     public function create(int $userId, LinkDetails $linkDetails, ?bool $recreate = false)
     {
-        return $this->linkRepository->create($userId, $linkDetails, $recreate);
+        if (!$recreate && $this->link->where('originalUrl', $linkDetails->getOriginalUrl())->first()) {
+            throw new OriginalLinkAlreadyExistsException('This link already exists.');
+        } else if ($recreate && $this->link->where('originalUrl', $linkDetails->getOriginalUrl())->first()) {
+            $id = $this->link->where('originalUrl', $linkDetails->getOriginalUrl())->get('id')->first()['id'];
+            return $this->linkRepository->update($id, null, $linkDetails);
+        }
+        return $this->linkRepository->create($userId, $linkDetails);
     }
 
     public function update(int $linkId, ?string $shortCode, LinkDetails $linkDetails)

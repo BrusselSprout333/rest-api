@@ -6,7 +6,7 @@ use App\Models\LinkDetails;
 
 interface LinkServiceInterface
 {
-    public function create(int $userId, LinkDetails $linkDetails);
+    public function create(int $userId, LinkDetails $linkDetails, ?bool $recreate);
     public function update(int $linkId, ?string $shortCode, LinkDetails $linkDetails);
     public function delete(int $linkId);
     public function getOriginalLink(string $shortCode);

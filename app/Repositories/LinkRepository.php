@@ -19,7 +19,7 @@ class LinkRepository implements LinkRepositoryInterface
     {
     }
 
-    public function create(int $userId, LinkDetails $linkDetails, ?bool $recreate = false) : Link
+    public function create(int $userId, LinkDetails $linkDetails) : Link
     {
         $this->link->setUserId($userId);
         $this->link->setIsPublic($linkDetails->getIsPublic());
@@ -110,7 +110,9 @@ class LinkRepository implements LinkRepositoryInterface
 
     public function getAll() //: Collection
     {
-        return $this->link->paginate(20);//->get();
+        if($this->user->isAuthenticated()) {
+        return $this->link->where('isPublic', true)->paginate(10);
+    } else throw new Exception('you dont have access');
     }
 
     public function getAllByUser(int $userId) //: Collection

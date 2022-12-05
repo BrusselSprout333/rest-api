@@ -12,6 +12,7 @@ class Link extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'userId',
         'originalUrl',
         'shortCode',
@@ -24,6 +25,16 @@ class Link extends Model
     public function user()
     {
         return $this->belongsTo(\App\Models\User::class);
+    }
+
+    public function getLinkId()
+    {
+        return $this->id;
+    }
+
+    public function setLinkId(int $id)
+    {
+        $this->id = $id;
     }
 
     public function getUserId()

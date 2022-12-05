@@ -24,8 +24,10 @@ class StoreLinkRequest extends FormRequest
     public function rules()
     {
         return [
-            'originalUrl' => 'required|max:255|string',
-            'isPublic' => 'required|boolean'
+            //'originalUrl' => 'required|max:255|string',
+            'originalUrl' => ['required', 'max:255', 'string', 'regex:#^http:\/\/#i'],
+            'isPublic' => 'required|boolean',
+            'recreate' => 'boolean'
         ];
     }
 }

@@ -3,11 +3,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\OriginalLinkAlreadyExistsException;
 use App\Http\Requests\StoreLinkRequest;
 use App\Http\Requests\UpdateLinkRequest;
 use App\Interfaces\LinkServiceInterface;
-use App\Models\Link;
 use App\Models\LinkDetails;
 use App\Services\LinkService;
 use App\Traits\HttpResponses;
@@ -22,7 +20,6 @@ class LinksController extends Controller
         protected LinkServiceInterface $linkService,
         protected UserController $user,
         protected LinkDetails $linkDetails,
-        protected Link $link
     ) {}
 
     /**
@@ -111,12 +108,10 @@ class LinksController extends Controller
         //создание ссылки
         $this->linkDetails->setOriginalUrl($request->originalUrl);
         $this->linkDetails->setIsPublic((bool)$request->isPublic);
+        $recreate = (bool)$request->recreate;
 
         try {
-            if($this->link->where('originalUrl', $this->linkDetails->getOriginalUrl())->first()) {
-                throw new OriginalLinkAlreadyExistsException('Note: This link already exists. It will be recreated');
-            }
-            $link = $this->linkService->create($this->user->getId(), $this->linkDetails);
+            $link = $this->linkService->create($this->user->getId(), $this->linkDetails, $recreate);
         } catch (\Exception $e) {
             return $this->error('', $e->getMessage(), 500);
         }
