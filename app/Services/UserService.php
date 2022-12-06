@@ -22,5 +22,10 @@ class UserService implements UserServiceInterface
     {
         return Auth::check();
     }
+
+    public function getEmail()
+    {
+        return Auth::user()->email;
+    }
 }
 

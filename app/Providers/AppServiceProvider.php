@@ -7,10 +7,12 @@ use App\Http\Controllers\LinksController;
 use App\Http\Controllers\UserController;
 use App\Interfaces\AuthServiceInterface;
 use App\Interfaces\LinkServiceInterface;
+use App\Interfaces\NotificationsServiceInterface;
 use App\Interfaces\UserServiceInterface;
 use App\Models\Link;
 use App\Models\LinkDetails;
 use App\Repositories\LinkRepository;
+use App\Services\NotificationsService;
 use App\Services\AuthService;
 use App\Services\LinkService;
 use App\Services\UserService;
@@ -39,6 +41,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->bind(UserServiceInterface::class, function () {
             return new UserService();
+        });
+        $this->app->bind(NotificationsServiceInterface::class, function () {
+            return new NotificationsService(new UserController(new UserService()));
         });
     }
 

@@ -4,11 +4,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Services\UserService;
-use App\Traits\HttpResponses;
 
 class UserController extends Controller
 {
-    use HttpResponses;
 
     protected UserService $userService;
 
@@ -33,5 +31,9 @@ class UserController extends Controller
     public function getId()
     {
         return $this->userService->getId();
+    }
+    public function getEmail()
+    {
+        return $this->userService->getEmail();
     }
 }

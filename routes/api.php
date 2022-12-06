@@ -5,6 +5,7 @@ use App\Http\Controllers\LinksController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redis;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,12 +28,18 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-  //  Route::get('/getName', [UserController::class, 'getName']);
-  //  Route::get('/getId', [UserController::class, 'getId']);
+    Route::get('/getName', [UserController::class, 'getName']);
+    Route::get('/getId', [UserController::class, 'getId']);
     Route::resource('/links', LinksController::class);
-  //  Route::post('/isAuthenticated', [UserController::class, 'isAuthenticated']);
+    Route::post('/isAuthenticated', [UserController::class, 'isAuthenticated']);
     Route::get('/links/shortCode/{shortCode}', [LinksController::class, 'getByShortCode']);
     Route::get('/links/user/{userId}', [LinksController::class, 'getAllByUser']);
     Route::get('/originalUrl/{shortCode}', [LinksController::class, 'getOriginalLink']);
+    Route::get('/getEmail', [UserController::class, 'getEmail']);
 });
 
+// Route::get('/publish', function () {
+//   Redis::publish('test-channel', json_encode([
+//       'name' => 'Adam Wathan'
+//   ]));
+// });
