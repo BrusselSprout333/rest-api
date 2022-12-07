@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('letters', function (Blueprint $table) {
             $table->id();
             $table->string('email');
+            $table->string('subject');
             $table->timestamps();
         });
     }

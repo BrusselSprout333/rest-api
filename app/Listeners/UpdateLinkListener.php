@@ -2,14 +2,14 @@
 
 namespace App\Listeners;
 
-use App\Events\CreateLinkEvent;
+use App\Events\UpdateLinkEvent;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\CreateLinkMail;
+use App\Mail\UpdateLinkMail;
 use Illuminate\Support\Facades\DB;
 
-class CreateLinkListener
+class UpdateLinkListener
 {
     /**
      * Create the event listener.
@@ -24,17 +24,17 @@ class CreateLinkListener
     /**
      * Handle the event.
      *
-     * @param  object  $event
+     * @param  \App\Events\UpdateLinkEvent  $event
      * @return void
      */
-    public function handle(CreateLinkEvent $event)
+    public function handle(UpdateLinkEvent $event)
     {
         DB::table('letters')->insert([
-                'email' => $event->email,
-                'subject' => 'link creation'
-            ]);
-            
+            'email' => $event->email,
+            'subject' => 'link updation'
+        ]);
+        
         //di mechanism
-        Mail::to($event->email)->send(new CreateLinkMail());
+        Mail::to($event->email)->send(new UpdateLinkMail());
     }
 }

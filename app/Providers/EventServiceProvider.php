@@ -3,7 +3,11 @@
 namespace App\Providers;
 
 use App\Events\CreateLinkEvent;
+use App\Events\DeleteLinkEvent;
+use App\Events\UpdateLinkEvent;
 use App\Listeners\CreateLinkListener;
+use App\Listeners\DeleteLinkListener;
+use App\Listeners\UpdateLinkListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -22,6 +26,12 @@ class EventServiceProvider extends ServiceProvider
         ],
         CreateLinkEvent::class => [
             CreateLinkListener::class,
+        ],
+        UpdateLinkEvent::class => [
+            UpdateLinkListener::class,
+        ],
+        DeleteLinkEvent::class => [
+            DeleteLinkListener::class,
         ],
     ];
 

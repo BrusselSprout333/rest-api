@@ -2,14 +2,14 @@
 
 namespace App\Listeners;
 
-use App\Events\CreateLinkEvent;
+use App\Events\DeleteLinkEvent;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\CreateLinkMail;
+use App\Mail\DeleteLinkMail;
 use Illuminate\Support\Facades\DB;
 
-class CreateLinkListener
+class DeleteLinkListener
 {
     /**
      * Create the event listener.
@@ -27,14 +27,14 @@ class CreateLinkListener
      * @param  object  $event
      * @return void
      */
-    public function handle(CreateLinkEvent $event)
+    public function handle(DeleteLinkEvent $event)
     {
         DB::table('letters')->insert([
-                'email' => $event->email,
-                'subject' => 'link creation'
-            ]);
-            
-        //di mechanism
-        Mail::to($event->email)->send(new CreateLinkMail());
+            'email' => $event->email,
+            'subject' => 'link deletion'
+        ]);
+        
+        //di mechanism 
+        Mail::to($event->email)->send(new DeleteLinkMail());
     }
 }

@@ -6,10 +6,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreLinkRequest;
 use App\Http\Requests\UpdateLinkRequest;
 use App\Interfaces\LinkServiceInterface;
-use App\Interfaces\NotificationsServiceInterface;
 use App\Models\LinkDetails;
-use App\Services\LinkService;
-use App\Services\NotificationsService;
 use App\Traits\HttpResponses;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,7 +19,7 @@ class LinksController extends Controller
         protected LinkServiceInterface $linkService,
         protected UserController $user,
         protected LinkDetails $linkDetails,
-        protected NotificationsServiceInterface $notification,
+        protected NotificationsController $notification,
     ) {}
 
     /**
@@ -119,7 +116,7 @@ class LinksController extends Controller
             return $this->error('', $e->getMessage(), 500);
         }
 
-        $this->notification->send();
+        $this->notification->linkCreated(); 
 
         return $this->success($link);
     }
@@ -164,6 +161,8 @@ class LinksController extends Controller
             return $this->error('', $e->getMessage(), 500);
         }
 
+        $this->notification->linkUpdated(); 
+
         return $this->success($link);
     }
 
@@ -181,6 +180,8 @@ class LinksController extends Controller
         } catch (\Exception $e) {
             return $this->error('', $e->getMessage(), 500);
         }
+
+        $this->notification->linkDeleted(); 
 
         return $this->success([
             'message' => 'link was deleted'

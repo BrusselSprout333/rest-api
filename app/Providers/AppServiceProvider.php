@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Events\CreateLinkEvent;
 use App\Helpers\Utilites\ShortLinkGenerator;
 use App\Http\Controllers\LinksController;
 use App\Http\Controllers\UserController;

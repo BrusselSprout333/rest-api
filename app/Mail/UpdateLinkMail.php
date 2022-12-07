@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Address;
 
-class CreateLinkMail extends Mailable
+class UpdateLinkMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -33,7 +33,7 @@ class CreateLinkMail extends Mailable
     {
         return new Envelope(
             from: new Address('hello@example.com', 'Jeffrey Way'),
-            subject: "You've created a link",
+            subject: "You've updated a link",
         );
     }
 
@@ -45,7 +45,7 @@ class CreateLinkMail extends Mailable
     public function content()
     {
         return new Content(
-            view: 'mail.linkCreated',
+            view: 'mail.linkUpdated',
         );
     }
 
