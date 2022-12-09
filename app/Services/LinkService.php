@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Interfaces\LinkRepositoryInterface;
 use App\Interfaces\LinkServiceInterface;
 use App\Models\LinkDetails;
 use App\Repositories\LinkRepository;
@@ -15,7 +16,7 @@ use App\Exceptions\OriginalLinkAlreadyExistsException;
 
 class LinkService implements LinkServiceInterface
 {
-    public function __construct(protected LinkRepository $linkRepository, private Link $link)
+    public function __construct(protected LinkRepositoryInterface $linkRepository, private Link $link)
     {
     }
 

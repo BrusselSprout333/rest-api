@@ -3,30 +3,89 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Events\DeleteLinkEvent;
-use App\Events\UpdateLinkEvent;
 use App\Interfaces\NotificationsServiceInterface;
 use App\Http\Controllers\UserController;
-use App\Events\CreateLinkEvent;
+use App\Mail\DeleteLinkMail;
+use App\Mail\UpdateLinkMail;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CreateLinkMail;
+use Illuminate\Support\Facades\DB;
+use App\Helpers\Utilites\SmsCredentials;
+use Vonage\SMS\Message\SMS;
 
 class NotificationsService implements NotificationsServiceInterface
 {
     public function __construct(
         protected UserController $user,
+        private SmsCredentials $credentials
     ){}
     
-    public function linkCreated()
+    public function linkCreatedMail($email)
     {
-        CreateLinkEvent::dispatch($this->user->getEmail(), $this->user->getPhone());
+        Mail::to($email)->send(new CreateLinkMail());
+
+        DB::table('letters')->insert([
+            'email' => $email,
+            'subject' => 'link creation'
+        ]);
     }
 
-    public function linkUpdated()
+    public function linkCreatedSMS($phone)
     {
-        UpdateLinkEvent::dispatch($this->user->getEmail(), $this->user->getPhone());
+        $client = $this->credentials->getClient();
+        // $client->sms()->send(
+        //     new SMS($phone, "Links Shortener", "You've created a link")
+        // );
+
+        DB::table('letters')->insert([
+            'phone' => $phone,
+            'subject' => 'link creation'
+        ]);
     }
 
-    public function linkDeleted()
+    public function linkUpdatedMail($email)
     {
-        DeleteLinkEvent::dispatch($this->user->getEmail(), $this->user->getPhone());
+        Mail::to($email)->send(new UpdateLinkMail());
+
+        DB::table('letters')->insert([
+            'email' => $email,
+            'subject' => 'link updation'
+        ]);
+    }
+
+    public function linkUpdatedSMS($phone)
+    {
+        $client = $this->credentials->getClient();
+        // $client->sms()->send(
+        //     new SMS($phone, "Links Shortener", "You've updated a link")
+        // );
+
+        DB::table('letters')->insert([
+            'phone' => $phone,
+            'subject' => 'link updation'
+        ]);
+    }
+
+    public function linkDeletedMail($email)
+    {
+        Mail::to($email)->send(new DeleteLinkMail());
+
+        DB::table('letters')->insert([
+            'email' => $email,
+            'subject' => 'link deletion'
+        ]);
+    }
+
+    public function linkDeletedSMS($phone)
+    {
+        $client = $this->credentials->getClient();
+        // $client->sms()->send(
+        //     new SMS($phone, "Links Shortener", "You've deleted a link")
+        // );
+
+        DB::table('letters')->insert([
+            'phone' => $phone,
+            'subject' => 'link deletion'
+        ]);
     }
 }

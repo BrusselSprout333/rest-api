@@ -9,7 +9,9 @@ use App\Interfaces\LinkServiceInterface;
 use App\Models\LinkDetails;
 use App\Traits\HttpResponses;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use App\Events\CreateLinkEvent;
+use App\Events\UpdateLinkEvent;
+use App\Events\DeleteLinkEvent;
 
 class LinksController extends Controller
 {
@@ -116,7 +118,7 @@ class LinksController extends Controller
             return $this->error('', $e->getMessage(), 500);
         }
 
-        $this->notification->linkCreated(); 
+        CreateLinkEvent::dispatch($this->user->getEmail(), $this->user->getPhone());
 
         return $this->success($link);
     }
@@ -161,7 +163,7 @@ class LinksController extends Controller
             return $this->error('', $e->getMessage(), 500);
         }
 
-        $this->notification->linkUpdated(); 
+        UpdateLinkEvent::dispatch($this->user->getEmail(), $this->user->getPhone());
 
         return $this->success($link);
     }
@@ -181,7 +183,7 @@ class LinksController extends Controller
             return $this->error('', $e->getMessage(), 500);
         }
 
-        $this->notification->linkDeleted(); 
+        DeleteLinkEvent::dispatch($this->user->getEmail(), $this->user->getPhone());
 
         return $this->success([
             'message' => 'link was deleted'

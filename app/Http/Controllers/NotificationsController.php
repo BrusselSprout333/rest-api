@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Interfaces\NotificationsServiceInterface;
 
 class NotificationsController extends Controller
@@ -11,18 +10,21 @@ class NotificationsController extends Controller
         protected NotificationsServiceInterface $notificationsService
     ) {}
 
-    public function linkCreated()
+    public function linkCreated($email, $phone)
     {
-        $this->notificationsService->linkCreated();
+        $this->notificationsService->linkCreatedMail($email);
+        $this->notificationsService->linkCreatedSMS($phone);
     }
 
-    public function linkUpdated()
+    public function linkUpdated($email, $phone)
     {
-        $this->notificationsService->linkUpdated();
+        $this->notificationsService->linkUpdatedMail($email);
+        $this->notificationsService->linkUpdatedSMS($phone);
     }
 
-    public function linkDeleted()
+    public function linkDeleted($email, $phone)
     {
-        $this->notificationsService->linkDeleted();
+        $this->notificationsService->linkDeletedMail($email);
+        $this->notificationsService->linkDeletedSMS($phone);
     }
 }

@@ -4,9 +4,12 @@ namespace App\Interfaces;
 
 interface NotificationsServiceInterface
 {
-    public function linkCreated();
+    public function linkCreatedMail($email);
+    public function linkCreatedSMS($phone);
 
-    public function linkUpdated();
+    public function linkUpdatedMail($email);
+    public function linkUpdatedSMS($phone);
 
-    public function linkDeleted();
+    public function linkDeletedMail($email);
+    public function linkDeletedSMS($phone);
 }
