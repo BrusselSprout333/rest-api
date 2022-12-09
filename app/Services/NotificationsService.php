@@ -8,7 +8,6 @@ use App\Events\UpdateLinkEvent;
 use App\Interfaces\NotificationsServiceInterface;
 use App\Http\Controllers\UserController;
 use App\Events\CreateLinkEvent;
-use Illuminate\Foundation\Events\Dispatchable;
 
 class NotificationsService implements NotificationsServiceInterface
 {
@@ -18,20 +17,16 @@ class NotificationsService implements NotificationsServiceInterface
     
     public function linkCreated()
     {
-        //отправка по нескольким направлениям
-        //di mechanism
-        //interface
-
-        CreateLinkEvent::dispatch($this->user->getEmail());
+        CreateLinkEvent::dispatch($this->user->getEmail(), $this->user->getPhone());
     }
 
     public function linkUpdated()
     {
-        UpdateLinkEvent::dispatch($this->user->getEmail());
+        UpdateLinkEvent::dispatch($this->user->getEmail(), $this->user->getPhone());
     }
 
     public function linkDeleted()
     {
-        DeleteLinkEvent::dispatch($this->user->getEmail());
+        DeleteLinkEvent::dispatch($this->user->getEmail(), $this->user->getPhone());
     }
 }

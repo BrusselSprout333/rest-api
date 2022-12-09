@@ -15,14 +15,17 @@ class UpdateLinkEvent
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public string $email;
+    public string $phone;
+    
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($email)
+    public function __construct($email, $phone)
     {
         $this->email = $email;
+        $this->phone = $phone;
     }
 
     /**

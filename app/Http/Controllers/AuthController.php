@@ -39,10 +39,11 @@ class AuthController extends Controller
     {
         $name = $request->name;
         $email = $request->email;
+        $phone = $request->phone;
         $password = $request->password;
 
         try {
-            $user = $this->authService->register($name, $email, $password);
+            $user = $this->authService->register($name, $email, $phone, $password);
         } catch (\Exception $e)
         {
             return $this->error('', $e->getMessage(), 500);

@@ -36,4 +36,9 @@ class UserController extends Controller
     {
         return $this->userService->getEmail();
     }
+
+    public function getPhone() 
+    {
+        return $this->userService->getPhone();
+    }
 }

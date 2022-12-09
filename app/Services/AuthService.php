@@ -20,11 +20,12 @@ class AuthService implements AuthServiceInterface
         return User::where('email', $email)->first();
     }
 
-    public function register(string $name, string $email, string $password)
+    public function register(string $name, string $email, string $phone, string $password)
     {
         return User::create([
             'name' => $name,
             'email' => $email,
+            'phone' => $phone,
             'password' => Hash::make($password)
         ]);
     }

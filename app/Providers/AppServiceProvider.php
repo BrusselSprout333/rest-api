@@ -2,16 +2,17 @@
 
 namespace App\Providers;
 
-use App\Events\CreateLinkEvent;
 use App\Helpers\Utilites\ShortLinkGenerator;
-use App\Http\Controllers\LinksController;
+use App\Helpers\Utilites\SmsCredentials;
 use App\Http\Controllers\UserController;
 use App\Interfaces\AuthServiceInterface;
 use App\Interfaces\LinkServiceInterface;
 use App\Interfaces\NotificationsServiceInterface;
 use App\Interfaces\UserServiceInterface;
+use App\Listeners\CreateLinkListener;
+use App\Listeners\UpdateLinkListener;
+use App\Listeners\DeleteLinkListener;
 use App\Models\Link;
-use App\Models\LinkDetails;
 use App\Repositories\LinkRepository;
 use App\Services\NotificationsService;
 use App\Services\AuthService;
@@ -45,6 +46,15 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->bind(NotificationsServiceInterface::class, function () {
             return new NotificationsService(new UserController(new UserService()));
+        });
+        $this->app->bind(CreateLinkListener::class, function () {
+            return new CreateLinkListener(SmsCredentials::getInstance());
+        });
+        $this->app->bind(UpdateLinkListener::class, function () {
+            return new UpdateLinkListener(SmsCredentials::getInstance());
+        });
+        $this->app->bind(DeleteLinkListener::class, function () {
+            return new DeleteLinkListener(SmsCredentials::getInstance());
         });
     }
 
