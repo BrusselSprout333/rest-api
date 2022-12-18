@@ -25,7 +25,7 @@ class StoreLinkRequest extends FormRequest
     {
         return [
             //'originalUrl' => 'required|max:255|string',
-            'originalUrl' => ['required', 'max:255', 'string', 'regex:#^http:\/\/#i'],
+            'originalUrl' => ['required', 'max:255', 'string', 'regex:#^(http|https):\/\/#i'],
             'isPublic' => 'required|boolean',
             'recreate' => 'boolean'
         ];

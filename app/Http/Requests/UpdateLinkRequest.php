@@ -24,7 +24,7 @@ class UpdateLinkRequest extends FormRequest
     public function rules()
     {
         return [
-            'originalUrl' => ['string', 'max:255', 'regex:#^http:\/\/#i'],
+            'originalUrl' => ['string', 'max:255', 'regex:#^(http|https):\/\/#i'],
             'isPublic' => 'boolean',
             'shortCode' => 'string|min:5|max:15'
         ];

@@ -6,12 +6,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreLinkRequest;
 use App\Http\Requests\UpdateLinkRequest;
 use App\Interfaces\LinkServiceInterface;
+use App\Models\Link;
 use App\Models\LinkDetails;
 use App\Traits\HttpResponses;
 use Illuminate\Http\JsonResponse;
-use App\Events\CreateLinkEvent;
-use App\Events\UpdateLinkEvent;
-use App\Events\DeleteLinkEvent;
+use Illuminate\Support\Facades\Redis;
+use PHPUnit\Runner\Exception;
 
 class LinksController extends Controller
 {
@@ -22,6 +22,7 @@ class LinksController extends Controller
         protected UserController $user,
         protected LinkDetails $linkDetails,
         protected NotificationsController $notification,
+        private Link $link
     ) {}
 
     /**
@@ -118,7 +119,8 @@ class LinksController extends Controller
             return $this->error('', $e->getMessage(), 500);
         }
 
-        CreateLinkEvent::dispatch($this->user->getEmail(), $this->user->getPhone());
+        $data = [$this->user->getEmail(), $this->user->getPhone(), $this->linkDetails->getOriginalUrl()];
+        Redis::publish('link_created', implode(",", $data));
 
         return $this->success($link);
     }
@@ -163,7 +165,8 @@ class LinksController extends Controller
             return $this->error('', $e->getMessage(), 500);
         }
 
-        UpdateLinkEvent::dispatch($this->user->getEmail(), $this->user->getPhone());
+        $data = [$this->user->getEmail(), $this->user->getPhone(), $link->originalUrl];
+        Redis::publish('link_updated', implode(",", $data));
 
         return $this->success($link);
     }
@@ -178,12 +181,17 @@ class LinksController extends Controller
     public function destroy(int $id): JsonResponse
     {
         try {
+            if($this->link->find($id)) {
+                $originalUrl = $this->link->find($id)->get('originalUrl')->first()['originalUrl'];
+            } else throw new Exception('this link doesnt exist');
             $this->linkService->delete($id);
         } catch (\Exception $e) {
             return $this->error('', $e->getMessage(), 500);
         }
 
-        DeleteLinkEvent::dispatch($this->user->getEmail(), $this->user->getPhone());
+        $data = [$this->user->getEmail(), $this->user->getPhone(), $originalUrl];
+
+        Redis::publish('link_deleted', implode(",", $data));
 
         return $this->success([
             'message' => 'link was deleted'

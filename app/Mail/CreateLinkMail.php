@@ -14,14 +14,15 @@ class CreateLinkMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $originalLink;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($originalLink)
     {
-        //
+        $this->originalLink = $originalLink;
     }
 
     /**

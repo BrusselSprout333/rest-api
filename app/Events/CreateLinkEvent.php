@@ -16,24 +16,26 @@ class CreateLinkEvent
 
     public string $email;
     public string $phone;
+    public string $originalLink;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($email, $phone)
+    public function __construct($email, $phone, $originalLink)
     {
         $this->email = $email;
         $this->phone = $phone;
+        $this->originalLink = $originalLink;
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
-    public function broadcastOn()
-    {
-        return new PrivateChannel('channel-name');
-    }
+    // /**
+    //  * Get the channels the event should broadcast on.
+    //  *
+    //  * @return \Illuminate\Broadcasting\Channel|array
+    //  */
+    // public function broadcastOn()
+    // {
+    //     return new PrivateChannel('channel-name');
+    // }
 }

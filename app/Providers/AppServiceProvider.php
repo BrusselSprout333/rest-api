@@ -4,16 +4,12 @@ namespace App\Providers;
 
 use App\Helpers\Utilites\ShortLinkGenerator;
 use App\Helpers\Utilites\SmsCredentials;
-use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\UserController;
 use App\Interfaces\AuthServiceInterface;
 use App\Interfaces\LinkRepositoryInterface;
 use App\Interfaces\LinkServiceInterface;
 use App\Interfaces\NotificationsServiceInterface;
 use App\Interfaces\UserServiceInterface;
-use App\Listeners\CreateLinkListener;
-use App\Listeners\UpdateLinkListener;
-use App\Listeners\DeleteLinkListener;
 use App\Models\Link;
 use App\Repositories\LinkRepository;
 use App\Services\NotificationsService;

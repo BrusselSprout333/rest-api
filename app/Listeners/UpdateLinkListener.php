@@ -4,18 +4,9 @@ namespace App\Listeners;
 
 use App\Events\UpdateLinkEvent;
 use App\Http\Controllers\NotificationsController;
-// use Illuminate\Contracts\Queue\ShouldQueue;
-// use Illuminate\Queue\InteractsWithQueue;
-// use Illuminate\Support\Facades\Mail;
-// use App\Mail\UpdateLinkMail;
-// use Illuminate\Support\Facades\DB;
-// use App\Helpers\Utilites\SmsCredentials;
-// use Vonage\SMS\Message\SMS;
 
 class UpdateLinkListener
 {
-    //private SmsCredentials $credentials;
-
     /**
      * Create the event listener.
      *
@@ -23,7 +14,6 @@ class UpdateLinkListener
      */
     public function __construct(private NotificationsController $notification)
     {
-        //$this->credentials = $credentials;
     }
 
     /**
@@ -34,6 +24,6 @@ class UpdateLinkListener
      */
     public function handle(UpdateLinkEvent $event)
     {
-        $this->notification->linkUpdated($event->email, $event->phone);
+        $this->notification->linkUpdated($event->email, $event->phone, $event->originalLink);
     }
 }

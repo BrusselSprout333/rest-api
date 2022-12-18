@@ -20,9 +20,9 @@ class NotificationsService implements NotificationsServiceInterface
         private SmsCredentials $credentials
     ){}
     
-    public function linkCreatedMail($email)
+    public function linkCreatedMail($email, $originalLink)
     {
-        Mail::to($email)->send(new CreateLinkMail());
+        Mail::to($email)->send(new CreateLinkMail($originalLink));
 
         DB::table('letters')->insert([
             'email' => $email,
@@ -30,11 +30,11 @@ class NotificationsService implements NotificationsServiceInterface
         ]);
     }
 
-    public function linkCreatedSMS($phone)
+    public function linkCreatedSMS($phone, $originalLink)
     {
         $client = $this->credentials->getClient();
         // $client->sms()->send(
-        //     new SMS($phone, "Links Shortener", "You've created a link")
+        //     new SMS($phone, "Links Shortener", "You've created a link: ".$originalLink)
         // );
 
         DB::table('letters')->insert([
@@ -43,9 +43,9 @@ class NotificationsService implements NotificationsServiceInterface
         ]);
     }
 
-    public function linkUpdatedMail($email)
+    public function linkUpdatedMail($email, $originalLink)
     {
-        Mail::to($email)->send(new UpdateLinkMail());
+        Mail::to($email)->send(new UpdateLinkMail($originalLink));
 
         DB::table('letters')->insert([
             'email' => $email,
@@ -53,11 +53,11 @@ class NotificationsService implements NotificationsServiceInterface
         ]);
     }
 
-    public function linkUpdatedSMS($phone)
+    public function linkUpdatedSMS($phone, $originalLink)
     {
         $client = $this->credentials->getClient();
         // $client->sms()->send(
-        //     new SMS($phone, "Links Shortener", "You've updated a link")
+        //     new SMS($phone, "Links Shortener", "You've updated a link: ".$originalLink)
         // );
 
         DB::table('letters')->insert([
@@ -66,9 +66,9 @@ class NotificationsService implements NotificationsServiceInterface
         ]);
     }
 
-    public function linkDeletedMail($email)
+    public function linkDeletedMail($email, $originalLink)
     {
-        Mail::to($email)->send(new DeleteLinkMail());
+        Mail::to($email)->send(new DeleteLinkMail($originalLink));
 
         DB::table('letters')->insert([
             'email' => $email,
@@ -76,11 +76,11 @@ class NotificationsService implements NotificationsServiceInterface
         ]);
     }
 
-    public function linkDeletedSMS($phone)
+    public function linkDeletedSMS($phone, $originalLink)
     {
         $client = $this->credentials->getClient();
         // $client->sms()->send(
-        //     new SMS($phone, "Links Shortener", "You've deleted a link")
+        //     new SMS($phone, "Links Shortener", "You've deleted a link: ".$originalLink)
         // );
 
         DB::table('letters')->insert([

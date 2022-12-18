@@ -6,6 +6,6 @@
 <body>
     <h1>LinkShortener.com</h1>
     
-    <p>You've updated a link</p>
+    <p>You've updated a link: {{ $originalLink }}</p>
 </body>
 </html>
