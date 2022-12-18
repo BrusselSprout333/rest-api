@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Helpers\Utilites\ShortLinkGenerator;
 use App\Helpers\Utilites\SmsCredentials;
+use App\Helpers\Utilites\SmsMessage;
 use App\Http\Controllers\UserController;
 use App\Interfaces\AuthServiceInterface;
 use App\Interfaces\LinkRepositoryInterface;
@@ -48,7 +49,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(NotificationsServiceInterface::class, function () {
             return new NotificationsService(
                 new UserController(new UserService()),
-                SmsCredentials::getInstance());
+                SmsCredentials::getInstance(),
+                new SmsMessage());
         });
 
         $this->app->bind(LinkRepositoryInterface::class, function () {

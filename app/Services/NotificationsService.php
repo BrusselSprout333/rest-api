@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Helpers\Utilites\SmsMessage;
 use App\Interfaces\NotificationsServiceInterface;
 use App\Http\Controllers\UserController;
 use App\Mail\DeleteLinkMail;
@@ -15,9 +16,11 @@ use Vonage\SMS\Message\SMS;
 
 class NotificationsService implements NotificationsServiceInterface
 {
+    const siteName = "Links Shortener";
     public function __construct(
         protected UserController $user,
-        private SmsCredentials $credentials
+        protected SmsCredentials $credentials,
+        protected SmsMessage $message
     ){}
     
     public function linkCreatedMail($email, $originalLink)
@@ -34,7 +37,7 @@ class NotificationsService implements NotificationsServiceInterface
     {
         $client = $this->credentials->getClient();
         // $client->sms()->send(
-        //     new SMS($phone, "Links Shortener", "You've created a link: ".$originalLink)
+        //     new SMS($phone, $this::siteName, $this->message->messageCreate($originalLink))
         // );
 
         DB::table('letters')->insert([
@@ -57,7 +60,7 @@ class NotificationsService implements NotificationsServiceInterface
     {
         $client = $this->credentials->getClient();
         // $client->sms()->send(
-        //     new SMS($phone, "Links Shortener", "You've updated a link: ".$originalLink)
+        //     new SMS($phone, $this::siteName, $this->message->messageUpdate($originalLink))
         // );
 
         DB::table('letters')->insert([
@@ -80,7 +83,7 @@ class NotificationsService implements NotificationsServiceInterface
     {
         $client = $this->credentials->getClient();
         // $client->sms()->send(
-        //     new SMS($phone, "Links Shortener", "You've deleted a link: ".$originalLink)
+        //     new SMS($phone, $this::siteName, $this->message->messagDelete($originalLink))
         // );
 
         DB::table('letters')->insert([
