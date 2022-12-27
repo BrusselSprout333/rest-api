@@ -108,14 +108,14 @@ class LinkRepository implements LinkRepositoryInterface
         } else throw new Exception('this link doesnt exist');
     }
 
-    public function getAll() //: Collection
+    public function getAll()
     {
         if($this->user->isAuthenticated()) {
         return $this->link->where('isPublic', true)->paginate(10);
     } else throw new Exception('you dont have access');
     }
 
-    public function getAllByUser(int $userId) //: Collection
+    public function getAllByUser(int $userId)
     {
         if($this->user->getId() === $userId) {
             return $this->link->where('userId', $userId)->paginate(10);
