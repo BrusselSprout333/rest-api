@@ -14,5 +14,4 @@ interface LinkServiceInterface
     public function getByShortCode(string $shortCode);
     public function getById(int $linkId);
     public function getAll();
-    public function paginate($items, $perPage = 10, $page = null, $options = []);
 }

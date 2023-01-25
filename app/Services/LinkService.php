@@ -24,20 +24,13 @@ class LinkService implements LinkServiceInterface
 
     public function getAll()
     {
-        return $this->linkRepository->getAll();
-    }
-
-    public function paginate($items, $perPage = 10, $page = null, $options = [])
-    {
-        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
-        $items = $items instanceof Collection ? $items : Collection::make($items);
-        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
+        $items = $this->linkRepository->getAll();
+        return $this->paginate($items);
     }
 
     public function getAllByUser(int $userId)
     {
         $items = $this->linkRepository->getAllByUser($userId);
-       // return $items;
         return $this->paginate($items); //свой метод пагинации т к разбиваем коллекцию
         //поменять на стороннюю функцию
     }
@@ -100,6 +93,14 @@ class LinkService implements LinkServiceInterface
             throw new InvalidArgumentException($e->getMessage());
         }
         DB::commit();
+    }
+
+
+    private function paginate($items, $perPage = 10, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 }
 

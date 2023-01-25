@@ -6,15 +6,12 @@ namespace App\Repositories;
 use App\Interfaces\LinkRepositoryInterface;
 use App\Models\LinkDetails;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Collection;
+use App\Models\Link;
 
 class LinkRepositoryProxy implements LinkRepositoryInterface
 {
     private $repository;
-
-    /**
-     * @var string[]
-     */
-    private $cache = [];
 
     public function __construct(LinkRepository $repository)
     {
@@ -36,110 +33,90 @@ class LinkRepositoryProxy implements LinkRepositoryInterface
     
     }
 
-    public function getById(int $linkId) 
-    {
-        
-    }
-
-    public function getOriginalLink(string $shortCode) 
-    {
-
-    }
-
     public function getByShortCode(string $shortCode) 
     {
         
     }
 
+    public function getById(int $linkId) 
+    {
+        $currentKey = 'link:id:';
+        $hash = Redis::get($currentKey.$linkId);
+        if (!isset($hash)) {
+            $link = $this->repository->getById($linkId);
+            Redis::set($currentKey.$linkId, $link);
+        } else {
+            $hash = Redis::get($currentKey.$linkId);
+            $link = $this->ConvertHashToArray($hash);
+        }
+        return $link;
+    }
+
+    public function getOriginalLink(string $shortCode) 
+    {
+        $currentKey = 'originalUrl:shortCode:';
+        $hash = Redis::get($currentKey.$shortCode);
+        if (!isset($hash)) {
+            $link = $this->repository->getOriginalLink($shortCode);
+            Redis::set($currentKey.$shortCode, $link);
+        } else {
+            $hash = Redis::get($currentKey.$shortCode);
+            $link = $this->ConvertHashToArray($hash);
+        }
+        return $link;
+    }
+
     public function getAll()
     {
-
+        $currentKey = 'links';
+        $hash = Redis::get($currentKey);
+        if (!isset($hash)) {
+            $collection = $this->repository->getAll();
+            Redis::set($currentKey, $collection);
+        } else {
+            $hash = Redis::get($currentKey);
+            $collection = $this->ConvertHashToCollection($hash);
+        }
+        return $collection;
     }
 
     public function getAllByUser(int $userId)
     {
-        $hash = Redis::get('links:user:'.$userId);
+        $currentKey = 'links:user:';
+        $hash = Redis::get($currentKey.$userId);
         if (!isset($hash)) {
-            echo "CacheProxy MISS. ";
-            $col = $this->repository->getAllByUser($userId);
-            Redis::set('links:user:'.$userId, $col);
-            return $col;
+            $collection = $this->repository->getAllByUser($userId);
+            Redis::set($currentKey.$userId, $collection);
         } else {
-            echo "CacheProxy HIT. Retrieving result from cache.\n";
-            $bodytag = Redis::get('links:user:'.$userId);
-            $bodytag = str_replace("[", "", $bodytag);
-            $bodytag = str_replace("{", "", $bodytag);
-            $pieces = explode("}", $bodytag);
-            array_pop($pieces);
-            $i = 0;
-            foreach ($pieces as $piece) {
-                $i++;
-                $piece = trim($piece,',');
-                $part[$i] = explode(",", $piece);
-            }
-
-            $col = collect($part);
-            return $col;
+            $hash = Redis::get($currentKey.$userId);
+            $collection = $this->ConvertHashToCollection($hash);
         }
-
-
-        // if (!isset($this->cache[$userId])) {
-        //     echo "CacheProxy MISS. ";
-        //     $result = $this->repository->getAllByUser($userId);
-        //     $this->cache[$userId] = $result;
-        // } else {
-        //     echo "CacheProxy HIT. Retrieving result from cache.\n";
-        // }
-        // return $this->cache[$userId];
-
-            
-        // $result = $this->repository->getAllByUser($userId);//return $result;
-        // Redis::set('links:user:'.$userId, $result);
-        // $bodytag = Redis::get('links:user:'.$userId);
-        // $bodytag = str_replace("[", "", $bodytag);
-        // $bodytag = str_replace("{", "", $bodytag);
-        // $pieces = explode("}", $bodytag);
-        // array_pop($pieces);
-        // $i = 0;
-        // foreach ($pieces as $piece) {
-        //     $i++;
-        //     $piece = trim($piece,',');
-        //     $part[$i] = explode(",", $piece);
-        // }
-
-        // $col = collect($part);
-        // return $col;
-
-
-        
-        //Redis::set('link_by_user5', $result);
-        //return Redis::get('link_by_user5');
-
-        //if (!isset($this->cache)) {
-        //     echo "CacheProxy MISS. ";
-        //     $result = $this->repository->getAllByUser($userId);
-        //     Redis::set('link_by_user' . $userId, $result);
-        //     return $result;
-        // } else {
-        //     echo "CacheProxy HIT. Retrieving result from cache.\n";
-        //     return $this->cache;
-        // }
+        return $collection;
     }
 
-
-    private function checkAccessByLinkId($linkId)
+    private function ConvertHashToCollection($hash) : Collection
     {
-        
+        $hash = str_replace("[", "", $hash);
+        $hash = str_replace("{", "", $hash);
+        $hash = stripcslashes($hash);
+        $pieces = explode("}", $hash);
+        array_pop($pieces);
+        $i = 0;
+        foreach ($pieces as $piece) {
+            $piece = trim($piece,',');
+            $parts[++$i] = explode(",", $piece);
+        }
+        return collect($parts);
     }
 
-    private function checkAccessByShortCode($shortCode)
+    private function ConvertHashToArray($hash)
     {
+        $hash = str_replace("[", "", $hash);
+        $hash = str_replace("{", "", $hash);
+        $hash = str_replace("}", "", $hash);
+        $hash = stripcslashes($hash);
+        $link = explode(",", $hash);
         
-    }
-
-
-    private function ConvertHashToCollection($hash) //: Collection
-    {
-//
+        return $link;
     }
 }
