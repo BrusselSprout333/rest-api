@@ -13,6 +13,7 @@ use App\Interfaces\NotificationsServiceInterface;
 use App\Interfaces\UserServiceInterface;
 use App\Models\Link;
 use App\Repositories\LinkRepository;
+use App\Repositories\LinkRepositoryProxy;
 use App\Services\NotificationsService;
 use App\Services\AuthService;
 use App\Services\LinkService;
@@ -37,14 +38,24 @@ class AppServiceProvider extends ServiceProvider
             return new UserService();
         });
 
+        // $this->app->bind(LinkServiceInterface::class, function () {
+        //     return new LinkService(
+        //         new LinkRepository(
+        //             new Link(),
+        //             new UserController(new UserService()),
+        //             new ShortLinkGenerator(new Link())),
+        //         new Link);
+        // });
+
         $this->app->bind(LinkServiceInterface::class, function () {
-            return new LinkService(
-                new LinkRepository(
-                    new Link(),
-                    new UserController(new UserService()),
-                    new ShortLinkGenerator(new Link())),
-                new Link);
-        });
+                return new LinkService(
+                    new LinkRepositoryProxy(
+                        new LinkRepository(
+                            new Link(),
+                            new UserController(new UserService()),
+                            new ShortLinkGenerator(new Link()))),
+                        new Link);
+            });
 
         $this->app->bind(NotificationsServiceInterface::class, function () {
             return new NotificationsService(
@@ -53,11 +64,22 @@ class AppServiceProvider extends ServiceProvider
                 new SmsMessage());
         });
 
+    //     $this->app->bind(LinkRepositoryInterface::class, function () {
+    //         return new LinkRepository(
+    //             new Link(),
+    //             new UserController(new UserService()),
+    //             new ShortLinkGenerator(new Link())
+    //         );
+    //     });
+    // }
+
+
         $this->app->bind(LinkRepositoryInterface::class, function () {
-            return new LinkRepository(
-                new Link(),
-                new UserController(new UserService()),
-                new ShortLinkGenerator(new Link())
+            return new LinkRepositoryProxy(
+                new LinkRepository(
+                    new Link(),
+                    new UserController(new UserService()),
+                    new ShortLinkGenerator(new Link()))
             );
         });
     }

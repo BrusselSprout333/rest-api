@@ -24,7 +24,7 @@ class LinksController extends Controller
         protected NotificationsController $notification,
         private Link $link
     ) {}
-
+    
     /**
      * @return JsonResponse
      */

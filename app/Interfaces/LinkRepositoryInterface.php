@@ -15,3 +15,4 @@ interface LinkRepositoryInterface
     public function getById(int $linkId);
     public function getAll();
 }
+

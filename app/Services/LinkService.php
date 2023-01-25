@@ -6,7 +6,9 @@ namespace App\Services;
 use App\Interfaces\LinkRepositoryInterface;
 use App\Interfaces\LinkServiceInterface;
 use App\Models\LinkDetails;
-use App\Repositories\LinkRepository;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
@@ -25,9 +27,19 @@ class LinkService implements LinkServiceInterface
         return $this->linkRepository->getAll();
     }
 
+    public function paginate($items, $perPage = 10, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
+    }
+
     public function getAllByUser(int $userId)
     {
-        return $this->linkRepository->getAllByUser($userId);
+        $items = $this->linkRepository->getAllByUser($userId);
+       // return $items;
+        return $this->paginate($items); //свой метод пагинации т к разбиваем коллекцию
+        //поменять на стороннюю функцию
     }
 
     public function getById(int $linkId)

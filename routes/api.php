@@ -37,9 +37,3 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/originalUrl/{shortCode}', [LinksController::class, 'getOriginalLink']);
     Route::get('/getEmail', [UserController::class, 'getEmail']);
 });
-
-// Route::get('/publish', function () {
-//   Redis::publish('test-channel', json_encode([
-//       'name' => 'Adam Wathan'
-//   ]));
-// });

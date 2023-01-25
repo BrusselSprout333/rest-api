@@ -9,11 +9,8 @@ use App\Services\UserService;
 class UserController extends Controller
 {
 
-    //protected UserServiceInterface $userService;
-
     public function __construct(private UserServiceInterface $userService)
     {
-       // $this->userService = $userService;
     }
 
     public function isAuthenticated()
@@ -26,9 +23,6 @@ class UserController extends Controller
         return $this->userService->getName();
     }
 
-    /**
-     * @return string|integer
-     */
     public function getId()
     {
         return $this->userService->getId();

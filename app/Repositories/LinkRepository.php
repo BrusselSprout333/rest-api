@@ -111,14 +111,16 @@ class LinkRepository implements LinkRepositoryInterface
     public function getAll()
     {
         if($this->user->isAuthenticated()) {
-        return $this->link->where('isPublic', true)->paginate(10);
-    } else throw new Exception('you dont have access');
+            return $this->link->where('isPublic', true)->paginate(10);
+        } else throw new Exception('you dont have access');
     }
 
-    public function getAllByUser(int $userId)
+    public function getAllByUser(int $userId) : Collection
     {
         if($this->user->getId() === $userId) {
-            return $this->link->where('userId', $userId)->paginate(10);
+            //return $this->link->where('userId', $userId)->paginate(10);
+            return $this->link->where('userId', $userId)->get();
+            
         } else throw new Exception('you dont have access');
     }
 
