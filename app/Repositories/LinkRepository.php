@@ -15,7 +15,10 @@ use Illuminate\Support\Collection;
 class LinkRepository implements LinkRepositoryInterface
 {
 
-    public function __construct(protected Link $link, protected UserController $user, private ShortLinkGenerator $shortLink)
+    public function __construct(
+        protected Link $link, 
+        protected UserController $user, 
+        private ShortLinkGenerator $shortLink)
     {
     }
 
@@ -28,7 +31,6 @@ class LinkRepository implements LinkRepositoryInterface
         $this->link->setCreatedDate(date("y-m-d"));
 
         $this->link->save();
-
         return $this->link;
     }
 
@@ -111,7 +113,7 @@ class LinkRepository implements LinkRepositoryInterface
     public function getAll() : Collection
     {
         if($this->user->isAuthenticated()) {
-            return $this->link->where('isPublic', true)->get();//->paginate(10);
+            return $this->link->where('isPublic', true)->get();
         } else throw new Exception('you dont have access');
     }
 

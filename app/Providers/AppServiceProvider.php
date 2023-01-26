@@ -53,7 +53,8 @@ class AppServiceProvider extends ServiceProvider
                         new LinkRepository(
                             new Link(),
                             new UserController(new UserService()),
-                            new ShortLinkGenerator(new Link()))),
+                            new ShortLinkGenerator(new Link())),
+                            new Link),
                         new Link);
             });
 
@@ -79,7 +80,8 @@ class AppServiceProvider extends ServiceProvider
                 new LinkRepository(
                     new Link(),
                     new UserController(new UserService()),
-                    new ShortLinkGenerator(new Link()))
+                    new ShortLinkGenerator(new Link())),
+                    new Link
             );
         });
     }
