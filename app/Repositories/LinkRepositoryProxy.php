@@ -28,8 +28,6 @@ class LinkRepositoryProxy implements LinkRepositoryInterface
     public function create(int $userId, LinkDetails $linkDetails) 
     {
         $link = $this->repository->create($userId, $linkDetails);
-        //Redis::set('link:id:'.$id, $link);
-        //Redis::set('link:shortCode:'.$shortCode, $link);
         Redis::del(self::LINKS);
         Redis::del(self::LINKS_USER.$userId);
         return $link;
@@ -37,15 +35,14 @@ class LinkRepositoryProxy implements LinkRepositoryInterface
 
     public function update(int $linkId, ?string $changedShortCode, LinkDetails $linkDetails) 
     {
-        $userId = $this->link->where('id', $linkId)->get('userId')->first();
-        $shortCode = $this->link->where('id', $linkId)->get('shortCode')->first();
+        $userId = $this->link->where('id', $linkId)->get('userId')->first()['userId'];
+        $shortCode = $this->link->where('id', $linkId)->get('shortCode')->first()['shortCode'];
         $link = $this->repository->update($linkId, $changedShortCode, $linkDetails);
         //сразу устанавливаем новый кэш
         Redis::del(self::LINK_ID.$linkId);
         Redis::set(self::LINK_ID, $link);
-        Redis::del(self::LINK_SHORTCODE.$shortCode);
-        Redis::set(self::LINK_SHORTCODE.$shortCode, $link);
         //удаление всех упоминаний неизмененной ссылки
+        Redis::del(self::LINK_SHORTCODE.$shortCode);
         Redis::del(self::LINKS);
         Redis::del(self::LINKS_USER.$userId);
         Redis::del(self::URL_SHORTCODE.$shortCode);
@@ -54,8 +51,8 @@ class LinkRepositoryProxy implements LinkRepositoryInterface
 
     public function delete(int $linkId)
     {
-        $userId = $this->link->where('id', $linkId)->get('userId')->first();
-        $shortCode = $this->link->where('id', $linkId)->get('shortCode')->first();
+        $userId = $this->link->where('id', $linkId)->get('userId')->first()['userId'];
+        $shortCode = $this->link->where('id', $linkId)->get('shortCode')->first()['shortCode'];
         $this->repository->delete($linkId);
         Redis::del(self::LINKS_USER.$userId); //удаление всех упоминаний ссылки
         Redis::del(self::LINK_ID.$linkId);
@@ -72,7 +69,7 @@ class LinkRepositoryProxy implements LinkRepositoryInterface
             Redis::set(self::LINK_SHORTCODE.$shortCode, $link);
         } else {
             $hash = Redis::get(self::LINK_SHORTCODE.$shortCode);
-            $link = $this->ConvertHashToArray($hash);
+            $link = $this->ConvertHashForOneLink($hash);
         }
         return $link;
     }
@@ -85,7 +82,7 @@ class LinkRepositoryProxy implements LinkRepositoryInterface
             Redis::set(self::LINK_ID.$linkId, $link);
         } else {
             $hash = Redis::get(self::LINK_ID.$linkId);
-            $link = $this->ConvertHashToArray($hash);
+            $link = $this->ConvertHashForOneLink($hash);
         }
         return $link;
     }
@@ -98,7 +95,7 @@ class LinkRepositoryProxy implements LinkRepositoryInterface
             Redis::set(self::URL_SHORTCODE.$shortCode, $link);
         } else {
             $hash = Redis::get(self::URL_SHORTCODE.$shortCode);
-            $link = $this->ConvertHashToArray($hash);
+            $link = $this->ConvertHashForOneLink($hash);
         }
         return $link;
     }
@@ -111,7 +108,7 @@ class LinkRepositoryProxy implements LinkRepositoryInterface
             Redis::set(self::LINKS, $collection);
         } else {
             $hash = Redis::get(self::LINKS);
-            $collection = $this->ConvertHashToCollection($hash);
+            $collection = $this->ConvertHashForCollection($hash);
         }
         return $collection;
     }
@@ -124,34 +121,71 @@ class LinkRepositoryProxy implements LinkRepositoryInterface
             Redis::set(self::LINKS_USER.$userId, $collection);
         } else {
             $hash = Redis::get(self::LINKS_USER.$userId);
-            $collection = $this->ConvertHashToCollection($hash);
+            $collection = $this->ConvertHashForCollection($hash);
         }
         return $collection;
     }
 
-    private function ConvertHashToCollection($hash) : Collection
+    private function ConvertHashForCollection($hash)
     {
         $hash = str_replace("[", "", $hash);
         $hash = str_replace("{", "", $hash);
         $hash = stripcslashes($hash);
-        $pieces = explode("}", $hash);
-        array_pop($pieces);
+        $hash = str_replace("\"", "", $hash);
+        $links = explode("}", $hash);
+        array_pop($links);
+
         $i = 0;
-        foreach ($pieces as $piece) {
-            $piece = trim($piece,',');
-            $parts[++$i] = explode(",", $piece);
+        foreach ($links as $link) {
+            $link = trim($link,',');
+            $attributes[++$i] = explode(",", $link);
         }
-        return collect($parts);
+
+        $array = [];
+        $j = 0;
+        foreach ($attributes as $attribute) {
+            ++$j;
+            foreach ($attribute as $part) {
+                $key = strstr($part, ':', true);
+                $value_colon = strstr($part, ':');
+                $value = ltrim($value_colon, ':');
+                $array[$j][$key] = $value;
+
+                if (isset($array[$j]['id']))
+                    $array[$j]['id'] = (int)$array[$j]['id'];
+                if (isset($array[$j]['userId']))
+                    $array[$j]['userId'] = (int)$array[$j]['userId'];
+                if (isset($array[$j]['isPublic']))
+                    $array[$j]['isPublic'] = (bool)$array[$j]['isPublic'];
+            }
+        }
+        return $array;
     }
 
-    private function ConvertHashToArray($hash)
+    private function ConvertHashForOneLink($hash)
     {
         $hash = str_replace("[", "", $hash);
         $hash = str_replace("{", "", $hash);
         $hash = str_replace("}", "", $hash);
         $hash = stripcslashes($hash);
-        $link = explode(",", $hash);
-        
-        return $link;
+        $hash = str_replace("\"", "", $hash);
+        $array_without_keys = explode(",", $hash);
+
+        $array = [];
+        foreach ($array_without_keys as $elem) {
+            $key = strstr($elem, ':', true);
+            $value_colon = strstr($elem, ':');
+            $value = ltrim($value_colon, ':');
+            $array[$key] = $value;
+        }
+
+        if (isset($array['id']))
+            $array['id'] = (int)$array['id'];
+        if (isset($array['userId']))
+            $array['userId'] = (int)$array['userId'];
+        if (isset($array['isPublic']))
+            $array['isPublic'] = (bool)$array['isPublic'];
+
+        return $array;
     }
 }

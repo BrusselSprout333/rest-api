@@ -50,6 +50,7 @@ class LinkRepository implements LinkRepositoryInterface
                     'isPublic' => $linkDetails->getIsPublic() ?? $link->getIsPublic(),
                     'originalUrl' => $linkDetails->getOriginalUrl() ?? $link->getOriginalUrl(),
                 ]);
+                $link->shortCode = str_replace('/', '-', $link->shortCode);
                 return $link;
             }
             else throw new Exception('you dont have access');
