@@ -18,6 +18,7 @@ use App\Services\NotificationsService;
 use App\Services\AuthService;
 use App\Services\LinkService;
 use App\Services\UserService;
+use Database\Factories\LinkFactory;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
@@ -30,6 +31,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        // $this->app->bind(LinkFactory::class, function () {
+        //     return new ShortLinkGenerator(new Link());
+        // });
+
         $this->app->bind(AuthServiceInterface::class, function () {
             return new AuthService();
         });

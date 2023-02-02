@@ -26,7 +26,7 @@ class LinkRepository implements LinkRepositoryInterface
     {
         $this->link->setUserId($userId);
         $this->link->setIsPublic($linkDetails->getIsPublic());
-        $this->link->setShortCode($this->shortLink->generateShortLink($linkDetails->getOriginalUrl()));
+        $this->link->setShortCode($this->shortLink->generateShortLink($linkDetails->getOriginalUrl(), $userId));
         $this->link->setOriginalUrl($linkDetails->getOriginalUrl());
         $this->link->setCreatedDate(date("y-m-d"));
 

@@ -33,10 +33,6 @@ class NotificationsService implements NotificationsServiceInterface
         $client->sms()->send(
             new SMS($phone, $this::siteName, $this->message->messageCreate($originalLink))
         );
-
-        $client->sms()->send(
-            new SMS($phone, $this::siteName, $this->message->messageCreate($originalLink))
-        );
     }
 
     public function linkUpdatedMail($email, $originalLink)

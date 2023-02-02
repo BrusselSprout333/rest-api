@@ -52,12 +52,25 @@ class LinkService implements LinkServiceInterface
 
     public function create(int $userId, LinkDetails $linkDetails, ?bool $recreate = false)
     {
-        if (!$recreate && $this->link->where('originalUrl', $linkDetails->getOriginalUrl())->first()) {
-            throw new OriginalLinkAlreadyExistsException('This link already exists.');
-        } else if ($recreate && $this->link->where('originalUrl', $linkDetails->getOriginalUrl())->first()) {
-            $id = $this->link->where('originalUrl', $linkDetails->getOriginalUrl())->get('id')->first()['id'];
-            return $this->linkRepository->update($id, null, $linkDetails);
+        $links = $this->link->where('originalUrl', $linkDetails->getOriginalUrl())->get(); 
+        //ссылка существует (возможно у нескольких пользователей)
+        
+        foreach ($links as $link)
+        {
+            $linkUserId = $link->userId; //id всех по отдельности
+            if ($linkUserId === $userId) {
+                if(!$recreate)
+                    throw new OriginalLinkAlreadyExistsException('This link already exists.');
+                else {
+                    $id = $this->link
+                            ->where('originalUrl', $linkDetails->getOriginalUrl())
+                            ->where('userId', $userId)
+                            ->get()->first()['id'];
+                    return $this->linkRepository->update($id, null, $linkDetails);
+                }
+            }
         }
+
         return $this->linkRepository->create($userId, $linkDetails);
     }
 
@@ -94,7 +107,6 @@ class LinkService implements LinkServiceInterface
         }
         DB::commit();
     }
-
 
     private function paginate($items, $perPage = 10, $page = null, $options = [])
     {

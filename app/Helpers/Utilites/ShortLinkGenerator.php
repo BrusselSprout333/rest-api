@@ -10,7 +10,7 @@ class ShortLinkGenerator
     public function __construct(private Link $link)
     {}
 
-    public function generateShortLink(string $originalUrl): string
+    public function generateShortLink(string $originalUrl, int $userId): string
     {
         // Генерируем код
 
@@ -22,6 +22,7 @@ class ShortLinkGenerator
         //обрезка
         $number = substr($number, 3);
         $number = substr($number, 0, 15);
+        $number .= (string)$userId;
 
         // Проверяем в БД
         if($this->link->where('shortCode', $number)->first())

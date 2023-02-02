@@ -12,6 +12,9 @@ use App\Traits\HttpResponses;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Redis;
 use PHPUnit\Runner\Exception;
+use App\Service;
+use Mockery\MockInterface;
+use App\Models\User;
 
 class LinksController extends Controller
 {
@@ -134,6 +137,16 @@ class LinksController extends Controller
      */
     public function show(int $linkId): JsonResponse
     {
+
+        //$b = 10 + $this->linkService->gig();
+        //return $this->linkService->gig();
+
+        // $this->mock(LinksController::class, function (MockInterface $mock) {
+        //     $mock->shouldReceive('gig')->once();
+        // });
+
+        //return $b;
+
         try {
             $link = $this->linkService->getById($linkId);
         } catch (\Exception $e) {

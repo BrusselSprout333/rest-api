@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Interfaces\UserServiceInterface;
-use App\Services\UserService;
 
 class UserController extends Controller
 {
