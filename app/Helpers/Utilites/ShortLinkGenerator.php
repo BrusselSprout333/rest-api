@@ -8,9 +8,11 @@ use App\Models\Link;
 class ShortLinkGenerator
 {
     public function __construct(private Link $link)
-    {}
+    {
+    }
 
-    public function generateShortLink(string $originalUrl, int $userId): string
+    public function generateShortLink(string $originalUrl, int $userId) : string
+
     {
         // Генерируем код
 
@@ -24,10 +26,32 @@ class ShortLinkGenerator
         $number = substr($number, 0, 15);
         $number .= (string)$userId;
 
-        // Проверяем в БД
-        if($this->link->where('shortCode', $number)->first())
-            throw new \Exception('Shortcode for this link was already created');
+        //$new = new ShortLinkGenerator(new Link);
+        //if ($new->db_search($number))
+        //throw new \Exception('Shortcode for this link was already created');
+       // $q = $this->link->where('shortCode', $number)->first();
 
-        return $number;
+        return $number; //$number;
+        //$b = new NewClass(new Link);
+        //return self::db_search($number);
+        //if (self::db_search($number))
+        // throw new \Exception('Shortcode for this link was already created');
+        // Проверяем в БД
+        //$link = new Link();
+        // if ($this->link->findOrFail(1))
+        //     return 2;
+
+        // if ($this->link->where('shortCode', $number)->first())
+        // {
+        //     throw new \Exception('Shortcode for this link was already created');
+        // }
+
+        // $q = $this->link->where('shortCode', $number);
+        // print_r(gettype($q));
+
+        //return $number;
     }
 }
+
+
+

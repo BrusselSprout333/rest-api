@@ -74,8 +74,9 @@ class LinkRepository implements LinkRepositoryInterface
     /**
      * @throws Exception
      */
-    public function getById(int $linkId) : Link
+    public function getById(int $linkId) //: Link
     {
+        //return 3;
         if($this->link->find($linkId)) {
             if($this->checkAccessByLinkId($linkId)) {
                 return $this->link->find($linkId);

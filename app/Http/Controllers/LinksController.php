@@ -122,8 +122,8 @@ class LinksController extends Controller
             return $this->error('', $e->getMessage(), 500);
         }
 
-        // $data = [$this->user->getEmail(), $this->user->getPhone(), $this->linkDetails->getOriginalUrl()];
-        // Redis::publish('link_created', implode(",", $data));
+        $data = [$this->user->getEmail(), $this->user->getPhone(), $this->linkDetails->getOriginalUrl()];
+        Redis::publish('link_created', implode(",", $data));
 
         return $this->success($link);
     }
@@ -137,16 +137,6 @@ class LinksController extends Controller
      */
     public function show(int $linkId): JsonResponse
     {
-
-        //$b = 10 + $this->linkService->gig();
-        //return $this->linkService->gig();
-
-        // $this->mock(LinksController::class, function (MockInterface $mock) {
-        //     $mock->shouldReceive('gig')->once();
-        // });
-
-        //return $b;
-
         try {
             $link = $this->linkService->getById($linkId);
         } catch (\Exception $e) {
@@ -178,8 +168,8 @@ class LinksController extends Controller
             return $this->error('', $e->getMessage(), 500);
         }
 
-        // $data = [$this->user->getEmail(), $this->user->getPhone(), $link->originalUrl];
-        // Redis::publish('link_updated', implode(",", $data));
+        $data = [$this->user->getEmail(), $this->user->getPhone(), $link->originalUrl];
+        Redis::publish('link_updated', implode(",", $data));
 
         return $this->success($link);
     }
@@ -202,8 +192,8 @@ class LinksController extends Controller
             return $this->error('', $e->getMessage(), 500);
         }
 
-        // $data = [$this->user->getEmail(), $this->user->getPhone(), $originalUrl];
-        // Redis::publish('link_deleted', implode(",", $data));
+        $data = [$this->user->getEmail(), $this->user->getPhone(), $originalUrl];
+        Redis::publish('link_deleted', implode(",", $data));
 
         return $this->success([
             'message' => 'link was deleted'

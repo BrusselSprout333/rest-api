@@ -18,7 +18,9 @@ use App\Exceptions\OriginalLinkAlreadyExistsException;
 
 class LinkService implements LinkServiceInterface
 {
-    public function __construct(protected LinkRepositoryInterface $linkRepository, private Link $link)
+    public function __construct(
+        protected LinkRepositoryInterface $linkRepository, 
+        private Link $link)
     {
     }
 
