@@ -32,7 +32,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/getId', [UserController::class, 'getId']);
     Route::resource('/links', LinksController::class);
     Route::post('/isAuthenticated', [UserController::class, 'isAuthenticated']);
-    Route::get('/links/shortCode/{shortCode}', [LinksController::class, 'getByShortCode']);
+   // Route::get('/links/shortCode/{shortCode}', [LinksController::class, 'getByShortCode']);
     Route::get('/links/user/{userId}', [LinksController::class, 'getAllByUser']);
     Route::get('/originalUrl/{shortCode}', [LinksController::class, 'getOriginalLink']);
     Route::get('/getEmail', [UserController::class, 'getEmail']);

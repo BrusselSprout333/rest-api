@@ -11,7 +11,6 @@ class LinkDetails extends Link
 
     private ?bool $isPublic;
     private ?string $originalUrl;
-   // private Link $link;
 
     public function __construct(private Link $link)
     {

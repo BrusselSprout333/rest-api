@@ -17,21 +17,14 @@ class LinkRepository implements LinkRepositoryInterface
 
     public function __construct(
         protected Link $link, 
-        protected UserController $user, 
-        private ShortLinkGenerator $shortLink)
+        protected UserController $user)
     {
     }
 
-    public function create(int $userId, LinkDetails $linkDetails) : Link
+    public function create(Link $link) : Link
     {
-        $this->link->setUserId($userId);
-        $this->link->setIsPublic($linkDetails->getIsPublic());
-        $this->link->setShortCode($this->shortLink->generateShortLink($linkDetails->getOriginalUrl(), $userId));
-        $this->link->setOriginalUrl($linkDetails->getOriginalUrl());
-        $this->link->setCreatedDate(date("y-m-d"));
-
-        $this->link->save();
-        return $this->link;
+        $link->save();
+        return $link;
     }
 
     /**
@@ -74,9 +67,8 @@ class LinkRepository implements LinkRepositoryInterface
     /**
      * @throws Exception
      */
-    public function getById(int $linkId) //: Link
+    public function getById(int $linkId) : Link
     {
-        //return 3;
         if($this->link->find($linkId)) {
             if($this->checkAccessByLinkId($linkId)) {
                 return $this->link->find($linkId);
@@ -102,14 +94,9 @@ class LinkRepository implements LinkRepositoryInterface
     /**
      * @throws Exception
      */
-    public function getByShortCode(string $shortCode) : Link
+    public function getByShortCode(string $shortCode)
     {
-        if($this->link->where('shortCode', $shortCode)->get('userId')->first()) {
-            if ($this->checkAccessByShortCode($shortCode)) {
-                return $this->link->where('shortCode', $shortCode)->first();
-
-            } else throw new Exception('you dont have access');
-        } else throw new Exception('this link doesnt exist');
+        return $this->link->where('shortCode', $shortCode)->first();
     }
 
     public function getAll() : Collection
@@ -124,6 +111,17 @@ class LinkRepository implements LinkRepositoryInterface
         if($this->user->getId() === $userId) {
             return $this->link->where('userId', $userId)->get();
         } else throw new Exception('you dont have access');
+    }
+
+    public function getByOriginalLink($url){
+        return $this->link->where('originalUrl', $url)->get();
+    }
+
+    public function getIdByUrlAndUserId($url, $userId){
+        return $this->link
+            ->where('originalUrl', $url)
+            ->where('userId', $userId)
+            ->get()->first()['id'];
     }
 
 

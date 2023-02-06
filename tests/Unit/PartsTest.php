@@ -6,6 +6,7 @@ use App\Exceptions\OriginalLinkAlreadyExistsException;
 use App\Helpers\Utilites\NewClass;
 use App\Helpers\Utilites\ShortLinkGenerator;
 use App\Interfaces\LinkRepositoryInterface;
+use App\Interfaces\LinkServiceInterface;
 use App\Models\LinkDetails;
 use Exception;
 use Illuminate\Support\Collection;
@@ -24,7 +25,7 @@ use App\Repositories\LinkRepository;
 class PartsTest extends TestCase
 {
 /*
-    public function test_process() {
+    public function test_notification() {
         //$mock = $this->getMockClass('ShortLinkGenerator');
         $mock = $this->getMockBuilder('ShortLinkGenerator')
                 ->setConstructorArgs(array())
@@ -44,22 +45,6 @@ class PartsTest extends TestCase
 /*
     public function test_shortCode_generator_works_correctly() 
     {
-        // $mock = Mockery::mock(new Link);
-
-        // $mock->shouldReceive('where')
-        //     ->once()
-        //     ->with(1)
-        //     ->andReturn(false);
-
-        // $mock = Mockery::mock(new Link);
-        // $this->app->instance('App\Models\Link', $mock);
-        // $mock->shouldReceive('where')
-        //         ->once()
-        //         ->with('shortCode', '123')
-        //         ->andReturnSelf();
-        // $mock->shouldReceive('first')
-        //         ->once()
-        //         ->andReturn(false);
 
         // $this->partialMock(ShortLinkGenerator::class, function (MockInterface $mock) {
         //     $mock->shouldReceive('db_search')
@@ -73,12 +58,6 @@ class PartsTest extends TestCase
         //         ->with('shortCode')
         //         ->andReturn(false);
 
-        // $this->mock(NewClass::class, function (MockInterface $mock) {
-        //     $mock->shouldReceive('db_search')
-        //         ->with('dfffdv')
-        //         ->once()
-        //         ->andReturn(true);
-        // }); 
         
         $generator = new ShortLinkGenerator(new Link());
 
@@ -87,14 +66,15 @@ class PartsTest extends TestCase
         var_dump($response);
         $this->assertEquals(true, $response);
     }*/
-/*
-    public function test_user_cant_see_links_without_authorization()
+
+    public function test_user_cant_see_links_without_authorization() //ok
     {
         $response = $this->getJson('/api/links');
 
         $response->assertUnauthorized();
     }
 
+    /*
     //miss all before LinkRepository - db query
     public function test_receives_all_data_when_returns_link() 
     {
@@ -118,15 +98,27 @@ class PartsTest extends TestCase
                 'createdDate'
             ]
         ]);
-    }
-
+    }*/
+/*
     //запрос в бд
     public function test_originalLinkAlreadyExistsException_is_thrown()
     {
-        $user = User::factory()->create();
-        $link = Link::factory()->create([
-            'userId' => $user['id'],
-        ]);
+        // $user = User::factory()->create();
+        // $link = Link::factory()->create([
+        //     'userId' => $user['id'],
+        // ]);
+        $this->mock(LinkRepositoryInterface::class, function (MockInterface $mock) {
+            $mock->shouldReceive('getLinkByOriginalLink')
+                ->with('123')
+                ->once()
+                ->andReturn(
+                    [1 => [
+                        'userId' => 1
+                    ],
+                    2 => [
+                        'userId' => 2
+                    ],]);
+        });
 
         // $this->assertModelExists($link);
         
@@ -153,9 +145,9 @@ class PartsTest extends TestCase
         $this->expectException(OriginalLinkAlreadyExistsException::class);
         app(LinkService::class)->create($user['id'], $linkDetails, 0); //попытка создать идентичную ссылку
     }
-
-    
-    public function test_InvalidArgumentException_is_thrown_on_link_delete()
+*/
+    /*
+    public function test_InvalidArgumentException_is_thrown_on_link_delete() //ok
     {
         $this->mock(LinkRepositoryInterface::class, function (MockInterface $mock) {
             $mock->shouldReceive('delete')
@@ -170,6 +162,31 @@ class PartsTest extends TestCase
 
         $this->expectException(\InvalidArgumentException::class);
         app(LinkService::class)->delete(2);
-    }
-    */
+    }*/
+/*
+    public function test_update()
+    {
+        $linkDetails = new LinkDetails(new Link());
+        $linkDetails->setIsPublic((bool)1);
+        $linkDetails->setOriginalUrl('http://newlink');
+        // $linkDetails->setIsPublic((bool)1);
+        // $linkDetails->setOriginalUrl('http://newlink');
+        //var_dump($linkDetails);
+       // $linkDetails = 'dfdfd';
+
+        $this->mock(LinkRepositoryInterface::class, function (MockInterface $mock) {
+            $linkDetails = new LinkDetails(new Link());
+            $mock->shouldReceive('update')
+                ->once()
+                ->with(2, 'ssss', $linkDetails)
+                ->andThrow(new Exception('you dont have access'));
+        });
+
+        // DB::shouldReceive('beginTransaction')->once();
+        // DB::shouldReceive('rollBack')->once();
+        // Log::shouldReceive('info')->once()->with('you dont have access');
+
+        $this->expectException(\InvalidArgumentException::class);
+        app(LinkService::class)->update(2,'ssss', $linkDetails);
+    }*/
 }

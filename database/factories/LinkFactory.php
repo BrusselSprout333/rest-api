@@ -13,11 +13,6 @@ use App\Models\User;
  */
 class LinkFactory extends Factory
 {
-
-    public function __construct()
-    {
-    }
-
     /**
      * Define the model's default state.
      *
@@ -26,13 +21,13 @@ class LinkFactory extends Factory
     public function definition()
     {
         $url = fake()->unique()->url();
-        //$generator = new ShortLinkGenerator(new Link);
-        //$user = User::factory()->create();
+        $generator = new ShortLinkGenerator(new Link);
+        $user = User::factory()->create();
 
         return [
-            'userId' => 12,//$user->id,
+            'userId' => $user->id,
             'originalUrl' => $url,
-            'shortCode' => '123',//$generator->generateShortLink($url, $user->id),
+            'shortCode' => $generator->generateShortLink($url, $user->id),
             'isPublic' => fake()->boolean(),
             'createdDate' => fake()->date(),
         ];

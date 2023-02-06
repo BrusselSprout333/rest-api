@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Helpers\Utilites\ShortLinkGenerator;
 use App\Interfaces\LinkRepositoryInterface;
 use App\Interfaces\LinkServiceInterface;
 use App\Models\LinkDetails;
@@ -20,7 +21,8 @@ class LinkService implements LinkServiceInterface
 {
     public function __construct(
         protected LinkRepositoryInterface $linkRepository, 
-        private Link $link)
+        private Link $link,
+        private ShortLinkGenerator $shortLink)
     {
     }
 
@@ -54,7 +56,7 @@ class LinkService implements LinkServiceInterface
 
     public function create(int $userId, LinkDetails $linkDetails, ?bool $recreate = false)
     {
-        $links = $this->link->where('originalUrl', $linkDetails->getOriginalUrl())->get(); 
+        $links = $this->linkRepository->getLinkByOriginalLink($linkDetails->getOriginalUrl());
         //ссылка существует (возможно у нескольких пользователей)
         
         foreach ($links as $link)
@@ -64,16 +66,19 @@ class LinkService implements LinkServiceInterface
                 if(!$recreate)
                     throw new OriginalLinkAlreadyExistsException('This link already exists.');
                 else {
-                    $id = $this->link
-                            ->where('originalUrl', $linkDetails->getOriginalUrl())
-                            ->where('userId', $userId)
-                            ->get()->first()['id'];
+                    $id = $this->linkRepository->getIdByUrlAndUserId($linkDetails->getOriginalUrl(), $userId);
                     return $this->linkRepository->update($id, null, $linkDetails);
                 }
             }
         }
+        //выставляем параметры ссылки
+        $this->link->setUserId($userId);
+        $this->link->setIsPublic($linkDetails->getIsPublic());
+        $this->link->setShortCode($this->shortLink->generateShortLink($linkDetails->getOriginalUrl(), $userId));
+        $this->link->setOriginalUrl($linkDetails->getOriginalUrl());
+        $this->link->setCreatedDate(date("y-m-d"));
 
-        return $this->linkRepository->create($userId, $linkDetails);
+        return $this->linkRepository->create($this->link);
     }
 
     public function update(int $linkId, ?string $shortCode, LinkDetails $linkDetails)

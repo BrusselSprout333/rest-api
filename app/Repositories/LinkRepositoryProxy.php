@@ -25,11 +25,11 @@ class LinkRepositoryProxy implements LinkRepositoryInterface
         $this->repository = $repository;
     }
 
-    public function create(int $userId, LinkDetails $linkDetails) 
+    public function create(Link $link) 
     {
-        $link = $this->repository->create($userId, $linkDetails);
+        $link = $this->repository->create($link);
         Redis::del(self::LINKS);
-        Redis::del(self::LINKS_USER.$userId);
+       // Redis::del(self::LINKS_USER.$userId);
         return $link;
     }
 
@@ -126,6 +126,15 @@ class LinkRepositoryProxy implements LinkRepositoryInterface
         return $collection;
     }
 
+    public function getByOriginalLink($url){
+        return $this->repository->getByOriginalLink($url);
+    }
+
+    public function getIdByUrlAndUserId($url, $userId){
+        return $this->repository->getIdByUrlAndUserId($url, $userId);
+    }
+
+    
     private function ConvertHashForCollection($hash)
     {
         $hash = str_replace("[", "", $hash);
