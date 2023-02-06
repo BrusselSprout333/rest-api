@@ -56,7 +56,7 @@ class LinkService implements LinkServiceInterface
 
     public function create(int $userId, LinkDetails $linkDetails, ?bool $recreate = false)
     {
-        $links = $this->linkRepository->getLinkByOriginalLink($linkDetails->getOriginalUrl());
+        $links = $this->linkRepository->getByOriginalLink($linkDetails->getOriginalUrl());
         //ссылка существует (возможно у нескольких пользователей)
         
         foreach ($links as $link)

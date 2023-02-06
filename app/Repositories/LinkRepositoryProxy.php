@@ -29,32 +29,46 @@ class LinkRepositoryProxy implements LinkRepositoryInterface
     {
         $link = $this->repository->create($link);
         Redis::del(self::LINKS);
-       // Redis::del(self::LINKS_USER.$userId);
+        Redis::del(self::LINKS_USER.$link->userId);
+
+        Redis::set(self::LINK_ID.$link->id, $link);
+        Redis::set(self::LINK_SHORTCODE.$link->shortCode, $link);
+        Redis::set(self::URL_SHORTCODE.$link->shortCode, $link->originalUrl);
+
         return $link;
     }
 
     public function update(int $linkId, ?string $changedShortCode, LinkDetails $linkDetails) 
     {
-        $userId = $this->link->where('id', $linkId)->get('userId')->first()['userId'];
-        $shortCode = $this->link->where('id', $linkId)->get('shortCode')->first()['shortCode'];
+        $link = $this->repository->getById($linkId);
+        $userId = $link->userId;
+        $shortCode = $link->shortCode;
+
         $link = $this->repository->update($linkId, $changedShortCode, $linkDetails);
-        //сразу устанавливаем новый кэш
+
         Redis::del(self::LINK_ID.$linkId);
-        Redis::set(self::LINK_ID, $link);
-        //удаление всех упоминаний неизмененной ссылки
+        Redis::set(self::LINK_ID.$linkId, $link);
+
         Redis::del(self::LINK_SHORTCODE.$shortCode);
+        Redis::set(self::LINK_SHORTCODE.$link->shortCode, $link);
+
+        Redis::del(self::URL_SHORTCODE.$shortCode);
+        Redis::set(self::URL_SHORTCODE.$link->shortCode, $link->url);
+
         Redis::del(self::LINKS);
         Redis::del(self::LINKS_USER.$userId);
-        Redis::del(self::URL_SHORTCODE.$shortCode);
         return $link;
     }
 
     public function delete(int $linkId)
     {
-        $userId = $this->link->where('id', $linkId)->get('userId')->first()['userId'];
-        $shortCode = $this->link->where('id', $linkId)->get('shortCode')->first()['shortCode'];
+        $link = $this->repository->getById($linkId);
+        $userId = $link->userId;
+        $shortCode = $link->shortCode;
+
         $this->repository->delete($linkId);
-        Redis::del(self::LINKS_USER.$userId); //удаление всех упоминаний ссылки
+
+        Redis::del(self::LINKS_USER.$userId);
         Redis::del(self::LINK_ID.$linkId);
         Redis::del(self::LINK_SHORTCODE.$shortCode);
         Redis::del(self::URL_SHORTCODE.$shortCode);
@@ -134,7 +148,7 @@ class LinkRepositoryProxy implements LinkRepositoryInterface
         return $this->repository->getIdByUrlAndUserId($url, $userId);
     }
 
-    
+
     private function ConvertHashForCollection($hash)
     {
         $hash = str_replace("[", "", $hash);
