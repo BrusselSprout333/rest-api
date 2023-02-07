@@ -11,6 +11,8 @@ use App\Models\User;
  */
 class LinkFactory extends Factory
 {
+    public function __construct(protected ShortLinkGenerator $generator)
+    {}
     /**
      * Define the model's default state.
      *

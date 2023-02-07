@@ -108,8 +108,7 @@ class LinkRepositoryProxy implements LinkRepositoryInterface
             $link = $this->repository->getOriginalLink($shortCode);
             Redis::set(self::URL_SHORTCODE.$shortCode, $link);
         } else {
-            $hash = Redis::get(self::URL_SHORTCODE.$shortCode);
-            $link = $this->ConvertHashForOneLink($hash);
+            $link = Redis::get(self::URL_SHORTCODE.$shortCode);
         }
         return $link;
     }

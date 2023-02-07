@@ -60,26 +60,6 @@ class AppServiceProvider extends ServiceProvider
             return new UserService();
         });
 
-        $this->app->bind(LinkServiceInterface::class, function () {
-            return new LinkService(
-                new LinkRepositoryProxy(
-                    new LinkRepository(
-                        new Link(),
-                        new UserController(new UserService()),
-                    ),
-                    new Link()),
-                new Link(),
-                new ShortLinkGenerator(
-                    new LinkRepositoryProxy(
-                        new LinkRepository(
-                            new Link(),
-                            new UserController(new UserService())
-                        ),
-                        new Link()
-                    )
-                ));
-            });
-
         $this->app->bind(NotificationsServiceInterface::class, function () {
             return new NotificationsService(
                 new UserController(new UserService()),

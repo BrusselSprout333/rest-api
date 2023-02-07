@@ -24,7 +24,7 @@ class ShortLinkGenerator
         $number = str_replace('/', '-', $number);
         //обрезка
         $number = substr($number, 3);
-        $number = substr($number, 0, 15);
+        $number = substr($number, 0, 10);
         $number .= (string)$userId;
 
         if ($this->linkRepository->getByShortCode($number))
