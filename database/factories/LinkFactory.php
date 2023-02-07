@@ -3,8 +3,6 @@
 namespace Database\Factories;
 
 use App\Helpers\Utilites\ShortLinkGenerator;
-use App\Models\Link;
-use App\Services\UserService;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\User;
 
@@ -21,13 +19,12 @@ class LinkFactory extends Factory
     public function definition()
     {
         $url = fake()->unique()->url();
-        $generator = new ShortLinkGenerator(new Link);
         $user = User::factory()->create();
 
         return [
             'userId' => $user->id,
             'originalUrl' => $url,
-            'shortCode' => $generator->generateShortLink($url, $user->id),
+            'shortCode' => app(ShortLinkGenerator::class)->generateShortLink($url, $user->id),
             'isPublic' => fake()->boolean(),
             'createdDate' => fake()->date(),
         ];

@@ -8,7 +8,7 @@ use App\Models\Link;
 use Hash;
 
 class ProjectTest extends TestCase
-{/*
+{
     public function test_register_new_user()
     {
         $user = User::factory()->make();
@@ -43,7 +43,7 @@ class ProjectTest extends TestCase
                 'status' => true,
             ]);
     }
-*/
+
     public function test_see_all_links()
     {
         $user = User::factory()->make();
@@ -56,7 +56,7 @@ class ProjectTest extends TestCase
                 'status' => true,
             ]);
     }
-/*
+
     public function test_create_a_new_link()
     {
         $user = User::factory()->create();
@@ -108,5 +108,5 @@ class ProjectTest extends TestCase
             ->assertJson([
                 'status' => true,
             ]);
-    }*/
+    }
 }

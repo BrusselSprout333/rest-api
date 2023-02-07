@@ -34,7 +34,7 @@ class DeleteLinkMail extends Mailable
     public function envelope()
     {
         return new Envelope(
-            from: new Address('hello@example.com', 'Jeffrey Way'),
+            from: new Address('linkShortener@gmail.com', 'Jeffrey Way'),
             subject: "You've deleted a link",
         );
     }

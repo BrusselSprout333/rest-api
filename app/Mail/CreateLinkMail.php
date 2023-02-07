@@ -2,8 +2,8 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
+//use Illuminate\Bus\Queueable;
+//use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -12,7 +12,8 @@ use Illuminate\Mail\Mailables\Address;
 
 class CreateLinkMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    //use Queueable;
+    use SerializesModels;
 
     public $originalLink;
     /**
@@ -31,9 +32,9 @@ class CreateLinkMail extends Mailable
      * @return \Illuminate\Mail\Mailables\Envelope
      */
     public function envelope()
-    {
+    { 
         return new Envelope(
-            from: new Address('hello@example.com', 'Jeffrey Way'),
+            from: new Address('linkShortener@gmail.com', 'Jeffrey Way'),
             subject: "You've created a link",
         );
     }
