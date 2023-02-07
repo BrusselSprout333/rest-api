@@ -111,9 +111,7 @@ class LinksController extends Controller
      */
     public function store(StoreLinkRequest $request): JsonResponse
     {
-        //создание ссылки
-        $this->linkDetails->setOriginalUrl($request->originalUrl);
-        $this->linkDetails->setIsPublic((bool)$request->isPublic);
+        $this->linkDetails = $request->getDetails();
         $recreate = (bool)$request->recreate;
 
         try {
@@ -158,12 +156,10 @@ class LinksController extends Controller
     public function update(UpdateLinkRequest $request, int $linkId): JsonResponse
     {
         //изменение уже созданной ссылки
-        $this->linkDetails->setIsPublic((bool)$request->isPublic);
-        $this->linkDetails->setOriginalUrl($request->originalUrl);
         $shortCode = $request->shortCode ?? null;
 
         try {
-            $link = $this->linkService->update($linkId, $shortCode, $this->linkDetails);
+            $link = $this->linkService->update($linkId, $shortCode, $request->getDetails());
         } catch (\Exception $e) {
             return $this->error('', $e->getMessage(), 500);
         }

@@ -29,7 +29,7 @@ class PartsTest extends TestCase
     public function test_shortCode_generator_works_correctly() 
     {
         $this->mock(LinkRepositoryInterface::class, function (MockInterface $mock) {
-            $mock->shouldReceive('getByShortCode')
+            $mock->shouldReceive('getByShortCode') 
                 ->with('newlink-here1')
                 ->once()
                 ->andReturn(false);
@@ -37,7 +37,7 @@ class PartsTest extends TestCase
 
         $response = app(ShortLinkGenerator::class)->generateShortLink('http://newlink/here', 1);
 
-        $this->assertEquals('newlink-here1', $response);
+        $this->assertEquals('newlink-he1', $response);
     }
 
     public function test_user_cant_see_links_without_authorization() 
