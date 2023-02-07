@@ -37,7 +37,7 @@ class PartsTest extends TestCase
 
         $response = app(ShortLinkGenerator::class)->generateShortLink('http://newlink/here', 1);
 
-        $this->assertEquals('newlink-he1', $response);
+        $this->assertEquals('newlink-here1', $response);
     }
 
     public function test_user_cant_see_links_without_authorization() 
